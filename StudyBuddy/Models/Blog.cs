@@ -33,7 +33,6 @@ namespace StudyBuddy.Models
         public int Likes { get; set; }
 
         public ICollection<BlogTag> Tags { get; set; } = new List<BlogTag>();
-
-        public CommentSection CommentSection { get; set; } = null!;
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

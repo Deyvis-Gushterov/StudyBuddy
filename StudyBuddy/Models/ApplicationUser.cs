@@ -21,6 +21,7 @@ namespace StudyBuddy.Models
         public string Nationality { get; set; } = null!;
 
         [Required]
+        [Range(13, 100)]
         public int Age { get; set; }
 
         public ICollection<Note> PersonalNotes { get; set; } = new List<Note>();

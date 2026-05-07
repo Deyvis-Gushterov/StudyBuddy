@@ -19,6 +19,10 @@ namespace StudyBuddy.Models
         public int Likes { get; set; }
         public int Dislikes { get; set; }
 
+        public int BlogId { get; set; }
+        [ForeignKey("BlogId")]
+        public Blog Blog { get; set; } = null!;
+
         public ICollection<Reply> Replies { get; set; } = new List<Reply>();
     }
 }

@@ -23,5 +23,14 @@ namespace StudyBuddy.Common
         //Comment
         public const int MinCommentContentLength = 1;
         public const int MaxCommentContentLength = 300;
+
+        //Report
+        public const int MaxReportReasonLength = 90;
+        public const int MinReportDetailsLength = 10;
+        public const int MaxReportDetailsLength = 500;
+
+        //Message
+        public const int MinFeedbackMessageLength = 10;
+        public const int MaxFeedbackMessageLength = 200;
     }
 }

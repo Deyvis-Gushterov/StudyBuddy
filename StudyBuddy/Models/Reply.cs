@@ -18,5 +18,8 @@ namespace StudyBuddy.Models
         public ApplicationUser Author { get; set; } = null!;
         public int Likes { get; set; }
         public int Dislikes { get; set; }
+        public int CommentId { get; set; }
+        [ForeignKey("CommentId")]
+        public Comment Comment { get; set; } = null!;
     }
 }

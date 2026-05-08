@@ -29,6 +29,7 @@ namespace StudyBuddy.Models
 
         public ICollection<ApplicationUser> Followers { get; set; } = new List<ApplicationUser>();
 
+
         
 
     }

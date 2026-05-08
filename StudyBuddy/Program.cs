@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Data;
 using StudyBuddy.Models;
+using StudyBuddy.Services.Interfaces;
+using StudyBuddy.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false).AddEntityFrameworkStores<ApplicationDbContext>();
 
-
+builder.Services.AddScoped<INoteService, NoteService>();
+builder.Services.AddScoped<IBlogService, BlogService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+//builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+//builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddRazorPages();
 

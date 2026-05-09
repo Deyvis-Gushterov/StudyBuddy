@@ -37,11 +37,6 @@ namespace StudyBuddy.Services.Implementations
                 return null;
             }
 
-            if (note.Creator == null)
-            {
-                return null;
-            }
-
             context.Notes.Add(note);
             await context.SaveChangesAsync();
             return note;

@@ -4,50 +4,490 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - StudyBuddy</title>
-    <script type="importmap"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/StudyBuddy.styles.css" asp-append-version="true" />
+
+    <style>
+            :root {
+                --navy: #1B2A4A;
+                --navy-light: #243659;
+                --amber: #D4890A;
+                --amber-light: #F0A A2D;
+                --cream: #FAF8F4;
+                --white: #FFFFFF;
+                --text-dark: #1A1A2E;
+                --text-muted: #6B7280;
+                --border: #E5E7EB;
+                --card-shadow: 0 2px 12px rgba(27,42,74,0.08);
+                --font-heading: 'Playfair Display', Georgia, serif;
+                --font-body: 'DM Sans', system-ui, sans-serif;
+            }
+
+            * { box-sizing: border-box; }
+
+            body {
+                font-family: var(--font-body);
+                background-color: var(--cream);
+                color: var(--text-dark);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                font-size: 15px;
+                line-height: 1.6;
+            }
+
+            h1, h2, h3, h4 {
+                font-family: var(--font-heading);
+                color: var(--navy);
+            }
+
+            /* ── Navbar ── */
+            .sb-navbar {
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                padding: 0 2rem;
+                height: 64px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                box-shadow: 0 1px 8px rgba(27,42,74,0.06);
+            }
+
+            .sb-logo {
+                font-family: var(--font-heading);
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--navy);
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .sb-logo span {
+                color: var(--amber);
+            }
+
+            .sb-logo:hover { color: var(--navy); text-decoration: none; }
+
+            .sb-logo-icon {
+                width: 32px;
+                height: 32px;
+                background: var(--navy);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .sb-logo-icon svg {
+                width: 18px;
+                height: 18px;
+                fill: var(--amber);
+            }
+
+            .sb-nav-links {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .sb-nav-links a {
+                font-family: var(--font-body);
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: var(--text-muted);
+                text-decoration: none;
+                padding: 0.4rem 0.85rem;
+                border-radius: 6px;
+                transition: all 0.15s ease;
+            }
+
+            .sb-nav-links a:hover {
+                color: var(--navy);
+                background: var(--cream);
+            }
+
+            .sb-nav-links a.active {
+                color: var(--navy);
+                background: var(--cream);
+                font-weight: 600;
+            }
+
+            .sb-nav-auth {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+
+            .btn-sb-ghost {
+                font-family: var(--font-body);
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--navy);
+                background: transparent;
+                border: 1.5px solid var(--border);
+                padding: 0.4rem 1rem;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: all 0.15s ease;
+                cursor: pointer;
+            }
+
+            .btn-sb-ghost:hover {
+                border-color: var(--navy);
+                color: var(--navy);
+                background: var(--cream);
+                text-decoration: none;
+            }
+
+            .btn-sb-primary {
+                font-family: var(--font-body);
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: var(--white);
+                background: var(--navy);
+                border: 1.5px solid var(--navy);
+                padding: 0.4rem 1.1rem;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: all 0.15s ease;
+                cursor: pointer;
+                display: inline-block;
+            }
+
+            .btn-sb-primary:hover {
+                background: var(--navy-light);
+                border-color: var(--navy-light);
+                color: var(--white);
+                text-decoration: none;
+            }
+
+            .btn-sb-amber {
+                font-family: var(--font-body);
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: var(--white);
+                background: var(--amber);
+                border: 1.5px solid var(--amber);
+                padding: 0.4rem 1.1rem;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: all 0.15s ease;
+                cursor: pointer;
+                display: inline-block;
+            }
+
+            .btn-sb-amber:hover {
+                background: #b8790a;
+                border-color: #b8790a;
+                color: var(--white);
+                text-decoration: none;
+            }
+
+            /* User dropdown */
+            .sb-user-badge {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                padding: 0.3rem 0.75rem;
+                border-radius: 8px;
+                border: 1.5px solid var(--border);
+                background: var(--white);
+                transition: all 0.15s;
+                position: relative;
+            }
+
+            .sb-user-badge:hover { border-color: var(--navy); background: var(--cream); }
+
+            .sb-avatar {
+                width: 28px;
+                height: 28px;
+                background: var(--navy);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--amber);
+                letter-spacing: 0.5px;
+            }
+
+            .sb-username {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: var(--navy);
+            }
+
+            /* ── Admin badge ── */
+            .sb-admin-badge {
+                font-size: 0.7rem;
+                font-weight: 600;
+                background: var(--amber);
+                color: var(--white);
+                padding: 1px 7px;
+                border-radius: 20px;
+                letter-spacing: 0.3px;
+            }
+
+            /* ── Main Content ── */
+            .sb-main {
+                flex: 1;
+                padding: 2.5rem 0;
+            }
+
+            .sb-container {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 1.5rem;
+            }
+
+            /* ── Cards ── */
+            .sb-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.5rem;
+                box-shadow: var(--card-shadow);
+                transition: box-shadow 0.2s ease;
+            }
+
+            .sb-card:hover { box-shadow: 0 4px 20px rgba(27,42,74,0.12); }
+
+            /* ── Page Headers ── */
+            .sb-page-header {
+                margin-bottom: 2rem;
+                padding-bottom: 1.25rem;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .sb-page-header h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0;
+            }
+
+            .sb-page-header p {
+                color: var(--text-muted);
+                margin: 0.25rem 0 0;
+                font-size: 0.95rem;
+            }
+
+            /* ── Forms ── */
+            .sb-form-group { margin-bottom: 1.25rem; }
+
+            .sb-label {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--navy);
+                margin-bottom: 0.4rem;
+                display: block;
+                letter-spacing: 0.2px;
+            }
+
+            .sb-input {
+                width: 100%;
+                padding: 0.6rem 0.9rem;
+                border: 1.5px solid var(--border);
+                border-radius: 8px;
+                font-family: var(--font-body);
+                font-size: 0.9rem;
+                color: var(--text-dark);
+                background: var(--white);
+                transition: border-color 0.15s;
+                outline: none;
+            }
+
+            .sb-input:focus { border-color: var(--navy); }
+            .sb-input::placeholder { color: var(--text-muted); }
+
+            textarea.sb-input { resize: vertical; min-height: 120px; }
+
+            /* ── Tags ── */
+            .sb-tag {
+                display: inline-block;
+                font-size: 0.75rem;
+                font-weight: 500;
+                background: var(--cream);
+                color: var(--navy);
+                border: 1px solid var(--border);
+                padding: 2px 10px;
+                border-radius: 20px;
+            }
+
+            .sb-tag-amber {
+                background: #FEF3C7;
+                color: #92400E;
+                border-color: #FCD34D;
+            }
+
+            /* ── Alerts ── */
+            .sb-alert {
+                padding: 0.85rem 1.1rem;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+
+            .sb-alert-danger { background: #FEE2E2; color: #991B1B; border-left: 3px solid #EF4444; }
+            .sb-alert-success { background: #D1FAE5; color: #065F46; border-left: 3px solid #10B981; }
+            .sb-alert-info { background: #DBEAFE; color: #1E40AF; border-left: 3px solid #3B82F6; }
+
+            /* ── Footer ── */
+            .sb-footer {
+                background: var(--white);
+                border-top: 1px solid var(--border);
+                padding: 1.5rem 0;
+            }
+
+            .sb-footer-inner {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 0 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .sb-footer-brand {
+                font-family: var(--font-heading);
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--navy);
+            }
+
+            .sb-footer-brand span { color: var(--amber); }
+
+            .sb-footer-text {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+            }
+
+            .sb-footer-links {
+                display: flex;
+                gap: 1.25rem;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .sb-footer-links a {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                text-decoration: none;
+                transition: color 0.15s;
+            }
+
+            .sb-footer-links a:hover { color: var(--navy); }
+
+            /* ── Validation ── */
+            .text-danger { color: #DC2626 !important; font-size: 0.8rem; }
+            .field-validation-error { color: #DC2626; font-size: 0.8rem; display: block; margin-top: 3px; }
+
+            /* ── Responsive ── */
+            @@media (max-width: 768px) {
+                .sb-navbar { padding: 0 1rem; }
+                .sb-nav-links { display: none; }
+                .sb-main { padding: 1.5rem 0; }
+                .sb-footer-inner { flex-direction: column; gap: 0.75rem; text-align: center; }
+            }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">StudyBuddy</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - StudyBuddy - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    <!-- ── Navbar ── -->
+    <nav class="sb-navbar">
+        <a class="sb-logo" asp-page="/Index">
+            <div class="sb-logo-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+            </div>
+            Study<span>Buddy</span>
+        </a>
+
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <ul class="sb-nav-links">
+                <li><a asp-page="/Notes/Index">Notes</a></li>
+                <li><a asp-page="/Blogs/Index">Blogs</a></li>
+                <li><a asp-page="/Profile/Index">Profile</a></li>
+                @if (User.IsInRole("Admin"))
+                {
+                    <li><a asp-page="/Admin/Index">Admin</a></li>
+                }
+            </ul>
+
+            <div class="sb-nav-auth">
+                @if (User.IsInRole("Admin"))
+                {
+                    <span class="sb-admin-badge">Admin</span>
+                }
+                <div class="sb-user-badge">
+                    <div class="sb-avatar">
+                        @(User.Identity.Name?.Substring(0, 2).ToUpper() ?? "U")
+                    </div>
+                    <span class="sb-username">@User.Identity.Name?.Split('@')[0]</span>
+                </div>
+                <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/">
+                    <button type="submit" class="btn-sb-ghost">Sign out</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <ul class="sb-nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            <div class="sb-nav-auth">
+                <a class="btn-sb-ghost" asp-area="Identity" asp-page="/Account/Login">Sign in</a>
+                <a class="btn-sb-primary" asp-area="Identity" asp-page="/Account/Register">Get started</a>
+            </div>
+        }
+    </nav>
+
+    <!-- ── Main Content ── -->
+    <main class="sb-main">
+        <div class="sb-container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer class="sb-footer">
+        <div class="sb-footer-inner">
+            <div class="sb-footer-brand">Study<span>Buddy</span></div>
+            <p class="sb-footer-text">© @DateTime.Now.Year StudyBuddy. Built for students.</p>
+            <ul class="sb-footer-links">
+                <li><a asp-page="/Privacy">Privacy</a></li>
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <li><a asp-page="/Feedback/Create">Feedback</a></li>
+                }
+            </ul>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

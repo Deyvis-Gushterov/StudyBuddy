@@ -1,0 +1,243 @@
+﻿@page
+@model StudyBuddy.Pages.NotePages.CreateModel
+@{
+    ViewData["Title"] = "Create Note";
+}
+
+<style>
+    .create-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .create-form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .create-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .sidebar-card h4 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 0.75rem;
+    }
+
+    .sidebar-tip {
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        margin-bottom: 0.6rem;
+    }
+
+    .sidebar-tip-dot {
+        width: 6px;
+        height: 6px;
+        min-width: 6px;
+        border-radius: 50%;
+        background: var(--amber);
+        margin-top: 6px;
+    }
+
+    .sidebar-tip p {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .char-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: right;
+        margin-top: 3px;
+    }
+
+    .char-count.warning { color: #D97706; }
+    .char-count.danger { color: #DC2626; }
+
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    @@media (max-width: 768px) {
+        .create-layout { grid-template-columns: 1fr; }
+        .create-sidebar { order: -1; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<!-- Page Header -->
+<div class="sb-page-header">
+    <div>
+        <h1>Create Note</h1>
+        <p>Share your knowledge with the community</p>
+    </div>
+    <a class="btn-sb-ghost" asp-page="/Notes/Index">← Back to Notes</a>
+</div>
+
+<div class="create-layout">
+    <!-- Main Form -->
+    <div class="create-form-card">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="sb-alert sb-alert-danger" style="display:none"></div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Topic">Topic</label>
+                <input class="sb-input" asp-for="Input.Topic" placeholder="e.g. Integration by Parts" />
+                <span asp-validation-for="Input.Topic" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="sb-form-group">
+                    <label class="sb-label" asp-for="Input.Subject">Subject</label>
+                    <select class="sb-input" asp-for="Input.Subject">
+                        <option value="">Select subject...</option>
+                        <option value="Math">Math</option>
+                        <option value="Science">Science</option>
+                        <option value="History">History</option>
+                        <option value="Literature">Literature</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Economics">Economics</option>
+                        <option value="Philosophy">Philosophy</option>
+                        <option value="Geography">Geography</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Input.Subject" class="field-validation-error"></span>
+                </div>
+                <div class="sb-form-group">
+                    <label class="sb-label">Date</label>
+                    <input class="sb-input" type="text" value="@DateTime.Now.ToString("MMMM dd, yyyy")" disabled style="background:var(--cream); color:var(--text-muted);" />
+                </div>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.BriefExplanation">Brief Explanation</label>
+                <input class="sb-input" asp-for="Input.BriefExplanation"
+                       placeholder="A short summary of what these notes cover..."
+                       id="briefInput"
+                       maxlength="200" />
+                <div class="char-count" id="briefCount">0 / 200</div>
+                <span asp-validation-for="Input.BriefExplanation" class="field-validation-error"></span>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Content">Notes Content</label>
+                <textarea class="sb-input" asp-for="Input.Content"
+                          placeholder="Write your full notes here. You can use plain text, bullet points, formulas, etc."
+                          id="contentInput"
+                          rows="12"
+                          maxlength="200"></textarea>
+                <div class="char-count" id="contentCount">0 / 200</div>
+                <span asp-validation-for="Input.Content" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-actions">
+                <a class="btn-sb-ghost" asp-page="/Notes/Index">Cancel</a>
+                <button type="submit" class="btn-sb-primary">Publish Note →</button>
+            </div>
+        </form>
+
+        @* Move model-state display outside of a second form to avoid malformed tag helpers *@
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="sb-alert sb-alert-danger">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Sidebar -->
+    <div class="create-sidebar">
+        <div class="sidebar-card">
+            <h4>📝 Writing Tips</h4>
+            <div class="sidebar-tip">
+                <div class="sidebar-tip-dot"></div>
+                <p>Use a clear, specific topic title so others can find your notes easily.</p>
+            </div>
+            <div class="sidebar-tip">
+                <div class="sidebar-tip-dot"></div>
+                <p>The brief explanation appears on the notes card — make it descriptive.</p>
+            </div>
+            <div class="sidebar-tip">
+                <div class="sidebar-tip-dot"></div>
+                <p>Structure your content with headings, bullet points and examples.</p>
+            </div>
+            <div class="sidebar-tip">
+                <div class="sidebar-tip-dot"></div>
+                <p>Include formulas, definitions, or key terms to make your notes more useful.</p>
+            </div>
+        </div>
+
+        <div class="sidebar-card" style="background: var(--cream);">
+            <h4>🤖 AI Assistant</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">
+                AI-powered tag suggestions and note summarization coming soon. Your notes will be automatically categorized and searchable.
+            </p>
+        </div>
+
+        <div class="sidebar-card">
+            <h4>👁️ Visibility</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 0.5rem;">
+                Your note will be <strong>publicly visible</strong> to all StudyBuddy users once published.
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateCount(inputId, countId, max) {
+            const input = document.getElementById(inputId);
+            const count = document.getElementById(countId);
+            if (!input || !count) return;
+            input.addEventListener('input', () => {
+                const len = input.value.length;
+                count.textContent = `${len} / ${max}`;
+                count.className = 'char-count';
+                if (len > max * 0.9) count.classList.add('warning');
+                if (len >= max) count.classList.add('danger');
+            });
+        }
+        updateCount('briefInput', 'briefCount', 200);
+        updateCount('contentInput', 'contentCount', 200);
+
+        const summary = document.querySelector('[data-valmsg-summary]');
+        if (summary && summary.children.length > 0) {
+            summary.style.display = 'block';
+        }
+    </script>
+
+}

@@ -1,0 +1,336 @@
+﻿@page
+@model StudyBuddy.Pages.BlogPages.CreateModel
+@{
+    ViewData["Title"] = "Write Blog";
+}
+
+<style>
+    .create-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .create-form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .create-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: sticky;
+        top: 80px;
+    }
+
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .sidebar-card h4 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 0.75rem;
+    }
+
+    .char-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: right;
+        margin-top: 3px;
+    }
+
+    .char-count.warning { color: #D97706; }
+    .char-count.danger  { color: #DC2626; }
+
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    /* Tag input */
+    .tag-input-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0.5rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        background: var(--white);
+        min-height: 44px;
+        align-items: center;
+        transition: border-color 0.15s;
+        cursor: text;
+    }
+
+    .tag-input-wrap:focus-within { border-color: var(--navy); }
+
+    .tag-chip {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--navy);
+        color: var(--white);
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .tag-chip-remove {
+        cursor: pointer;
+        opacity: 0.7;
+        font-size: 0.85rem;
+        line-height: 1;
+    }
+
+    .tag-chip-remove:hover { opacity: 1; }
+
+    .tag-real-input {
+        border: none;
+        outline: none;
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        background: transparent;
+        min-width: 120px;
+        flex: 1;
+    }
+
+    .publish-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: var(--cream);
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+    }
+
+    .publish-toggle label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--navy);
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 40px;
+        height: 22px;
+    }
+
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background: var(--border);
+        border-radius: 22px;
+        transition: 0.2s;
+    }
+
+    .toggle-slider::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 3px;
+        top: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.2s;
+    }
+
+    .toggle-switch input:checked + .toggle-slider { background: var(--navy); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    @@media (max-width: 768px) {
+        .create-layout { grid-template-columns: 1fr; }
+        .create-sidebar { position: static; }
+    }
+</style>
+
+<div class="sb-page-header">
+    <div>
+        <h1>Write a Blog</h1>
+        <p>Share your knowledge and insights with the community</p>
+    </div>
+    <a class="btn-sb-ghost" asp-page="/Blogs/Index">← Back to Blogs</a>
+</div>
+
+<div class="create-layout">
+    <div class="create-form-card">
+        <form method="post" id="blogForm">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="sb-alert sb-alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="margin:0;">@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Title">Title</label>
+                <input class="sb-input" asp-for="Input.Title"
+                       placeholder="Give your blog a compelling title..."
+                       id="titleInput" maxlength="100" />
+                <div class="char-count" id="titleCount">0 / 100</div>
+                <span asp-validation-for="Input.Title" class="field-validation-error"></span>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Summary">Summary</label>
+                <input class="sb-input" asp-for="Input.Summary"
+                       placeholder="A short description shown on the blog card..."
+                       id="summaryInput" maxlength="300" />
+                <div class="char-count" id="summaryCount">0 / 300</div>
+                <span asp-validation-for="Input.Summary" class="field-validation-error"></span>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label">Tags</label>
+                <div class="tag-input-wrap" id="tagWrap" onclick="document.getElementById('tagInput').focus()">
+                    <input type="text" id="tagInput" class="tag-real-input"
+                           placeholder="Type a tag and press Enter..." maxlength="30" />
+                </div>
+                <input type="hidden" asp-for="Input.Tags" id="tagsHidden" />
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                    Press Enter or comma to add a tag. Max 5 tags.
+                </p>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Content">Content</label>
+                <textarea class="sb-input" asp-for="Input.Content"
+                          placeholder="Write your blog post here. Share your knowledge, insights, and ideas..."
+                          id="contentInput" rows="16"></textarea>
+                <div class="char-count" id="contentCount">0 / 10000</div>
+                <span asp-validation-for="Input.Content" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-actions">
+                <a class="btn-sb-ghost" asp-page="/Blogs/Index">Cancel</a>
+                <button type="submit" name="publish" value="false" class="btn-sb-ghost">
+                    Save as Draft
+                </button>
+                <button type="submit" name="publish" value="true" class="btn-sb-primary">
+                    Publish →
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="create-sidebar">
+        <div class="sidebar-card">
+            <h4>✍️ Writing Tips</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0 0 0.5rem;">
+                Start with a strong hook — the first sentence determines if people keep reading.
+            </p>
+            <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0 0 0.5rem;">
+                Use short paragraphs. Long walls of text are hard to read on screen.
+            </p>
+            <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">
+                Tags help people discover your blog — use specific, relevant terms.
+            </p>
+        </div>
+
+        <div class="sidebar-card">
+            <h4>📋 Publish Options</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 0.75rem; line-height:1.6;">
+                <strong>Save as Draft</strong> — only visible to you. Edit anytime before publishing.
+            </p>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.6;">
+                <strong>Publish</strong> — visible to all StudyBuddy users immediately.
+            </p>
+        </div>
+
+        <div class="sidebar-card" style="background:var(--cream);">
+            <h4>🤖 AI Writing Assistant</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.6;">
+                AI-powered writing suggestions and auto-tagging coming soon!
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Char counters
+        function updateCount(inputId, countId, max) {
+            const el = document.getElementById(inputId);
+            const ct = document.getElementById(countId);
+            if (!el || !ct) return;
+            const update = () => {
+                const len = el.value.length;
+                ct.textContent = `${len} / ${max}`;
+                ct.className = 'char-count';
+                if (len > max * 0.9) ct.classList.add('warning');
+                if (len >= max)      ct.classList.add('danger');
+            };
+            el.addEventListener('input', update); update();
+        }
+        updateCount('titleInput',   'titleCount',   100);
+        updateCount('summaryInput', 'summaryCount', 300);
+        updateCount('contentInput', 'contentCount', 10000);
+
+        // Tag system
+        const tags = [];
+        const tagInput   = document.getElementById('tagInput');
+        const tagWrap    = document.getElementById('tagWrap');
+        const tagsHidden = document.getElementById('tagsHidden');
+
+        function renderTags() {
+            tagWrap.querySelectorAll('.tag-chip').forEach(c => c.remove());
+            tags.forEach((tag, i) => {
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `${tag}<span class="tag-chip-remove" data-i="${i}">×</span>`;
+                tagWrap.insertBefore(chip, tagInput);
+            });
+            tagsHidden.value = tags.join(',');
+            tagInput.style.display = tags.length >= 5 ? 'none' : '';
+        }
+
+        tagInput.addEventListener('keydown', e => {
+            if ((e.key === 'Enter' || e.key === ',') && tagInput.value.trim()) {
+                e.preventDefault();
+                const val = tagInput.value.trim().replace(/,/g, '');
+                if (val && tags.length < 5 && !tags.includes(val)) {
+                    tags.push(val);
+                    tagInput.value = '';
+                    renderTags();
+                }
+            }
+            if (e.key === 'Backspace' && !tagInput.value && tags.length) {
+                tags.pop(); renderTags();
+            }
+        });
+
+        tagWrap.addEventListener('click', e => {
+            if (e.target.classList.contains('tag-chip-remove')) {
+                tags.splice(+e.target.dataset.i, 1);
+                renderTags();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,549 @@
+﻿@page "{id:int}"
+@model StudyBuddy.Pages.BlogPages.DetailsModel
+@{
+    ViewData["Title"] = Model.Blog?.Title ?? "Blog";
+}
+
+<style>
+    .blog-layout {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    /* Article */
+    .blog-article {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+    }
+
+    .blog-article-header {
+        padding: 2.5rem 2.5rem 2rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .blog-header-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 1.25rem;
+    }
+
+    .blog-header-tag {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        color: var(--navy);
+    }
+
+    .blog-article-title {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        color: var(--navy);
+        line-height: 1.25;
+        margin-bottom: 1.25rem;
+    }
+
+    .blog-article-summary {
+        font-size: 1rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        font-style: italic;
+        margin-bottom: 1.5rem;
+        padding-left: 1rem;
+        border-left: 3px solid var(--amber);
+    }
+
+    .blog-author-row {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+    }
+
+    .blog-author-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .blog-author-avatar {
+        width: 40px;
+        height: 40px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--amber);
+    }
+
+    .blog-author-details strong {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--navy);
+        display: block;
+    }
+
+    .blog-author-details span {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    .blog-meta-divider {
+        width: 1px;
+        height: 28px;
+        background: var(--border);
+    }
+
+    .blog-meta-stat {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Article body */
+    .blog-article-body {
+        padding: 2.5rem;
+        font-size: 1rem;
+        line-height: 1.85;
+        color: var(--text-dark);
+        white-space: pre-wrap;
+    }
+
+    /* Action bar */
+    .blog-action-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.25rem 2rem;
+        border-top: 1px solid var(--border);
+        background: var(--cream);
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0.45rem 1rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+    }
+
+    .action-btn:hover { border-color: var(--navy); color: var(--navy); text-decoration: none; }
+    .action-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+    .action-btn.danger { margin-left: auto; }
+    .action-btn.danger:hover { border-color: #EF4444; color: #EF4444; background: #FEE2E2; }
+
+    /* Draft banner */
+    .draft-banner {
+        background: #FEF3C7;
+        border-bottom: 1px solid #FCD34D;
+        padding: 0.75rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .draft-banner p {
+        font-size: 0.875rem;
+        color: #92400E;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Comments */
+    .comments-section {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.75rem 2rem;
+        margin-top: 1.5rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .comments-section h3 {
+        font-size: 1.1rem;
+        color: var(--navy);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .comment-form-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+    }
+
+    .comment-avatar {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--amber);
+    }
+
+    .comment-form-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 0.75rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .comment-item:last-child { border-bottom: none; }
+
+    .comment-content { flex: 1; }
+
+    .comment-author-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 3px;
+    }
+
+    .comment-date {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-text {
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .comment-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .comment-action-btn {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        transition: color 0.15s;
+    }
+
+    .comment-action-btn:hover { color: var(--navy); }
+
+    /* Sidebar */
+    .blog-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: sticky;
+        top: 80px;
+    }
+
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .sidebar-card h4 {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 1rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .author-profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .author-avatar-lg {
+        width: 56px;
+        height: 56px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--amber);
+    }
+
+    .author-name  { font-weight: 600; color: var(--navy); font-size: 0.95rem; }
+    .author-nationality { font-size: 0.8rem; color: var(--text-muted); }
+
+    @@media (max-width: 768px) {
+        .blog-layout { grid-template-columns: 1fr; }
+        .blog-article-header { padding: 1.5rem; }
+        .blog-article-body  { padding: 1.5rem; }
+        .blog-action-bar    { padding: 1rem 1.5rem; }
+    }
+</style>
+
+@if (Model.Blog == null)
+{
+    <div class="sb-alert sb-alert-danger">Blog not found.</div>
+    return;
+}
+
+<div style="margin-bottom:1.5rem;">
+    <a class="btn-sb-ghost" asp-page="/Blogs/Index">← Back to Blogs</a>
+</div>
+
+<div class="blog-layout">
+    <div>
+        <div class="blog-article">
+
+            @if (Model.Blog.PublishedAt == null)
+            {
+                <div class="draft-banner">
+                    <p>📝 This blog is a draft — only you can see it.</p>
+                    <form method="post" asp-page-handler="Publish">
+                        <input type="hidden" name="id" value="@Model.Blog.Id" />
+                        <button type="submit" class="btn-sb-primary" style="font-size:0.82rem; padding:0.35rem 1rem;">
+                            Publish now
+                        </button>
+                    </form>
+                </div>
+            }
+
+            <div class="blog-article-header">
+                @if (Model.Blog.Tags.Any())
+                {
+                    <div class="blog-header-tags">
+                        @foreach (var tag in Model.Blog.Tags)
+                        {
+                            <span class="blog-header-tag">@tag.Name</span>
+                        }
+                    </div>
+                }
+                <h1 class="blog-article-title">@Model.Blog.Title</h1>
+                <p class="blog-article-summary">@Model.Blog.Summary</p>
+                <div class="blog-author-row">
+                    <div class="blog-author-info">
+                        <div class="blog-author-avatar">
+                            @(Model.Blog.Author?.FirstName?.Substring(0, 1).ToUpper())@(Model.Blog.Author?.LastName?.Substring(0, 1).ToUpper())
+                        </div>
+                        <div class="blog-author-details">
+                            <strong>@Model.Blog.Author?.FirstName @Model.Blog.Author?.LastName</strong>
+                            <span>@Model.Blog.PublishedAt?.ToString("MMMM dd, yyyy") ?? "Draft"</span>
+                        </div>
+                    </div>
+                    <div class="blog-meta-divider"></div>
+                    <span class="blog-meta-stat">❤️ @Model.Blog.Likes likes</span>
+                    <span class="blog-meta-stat">👁️ @Model.Blog.Views views</span>
+                </div>
+            </div>
+
+            <div class="blog-article-body">@Model.Blog.Content</div>
+
+            <div class="blog-action-bar">
+                <form method="post" asp-page-handler="Like">
+                    <input type="hidden" name="id" value="@Model.Blog.Id" />
+                    <button type="submit" class="action-btn">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                        Like (@Model.Blog.Likes)
+                    </button>
+                </form>
+
+                @if (Model.IsOwner || User.IsInRole("Admin"))
+                {
+                    <a class="action-btn" asp-page="/Blogs/Edit" asp-route-id="@Model.Blog.Id">
+                        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                        Edit
+                    </a>
+
+                    @if (Model.Blog.PublishedAt != null)
+                    {
+                        <form method="post" asp-page-handler="Unpublish">
+                            <input type="hidden" name="id" value="@Model.Blog.Id" />
+                            <button type="submit" class="action-btn">Unpublish</button>
+                        </form>
+                    }
+
+                    <form method="post" asp-page-handler="Delete"
+                          onsubmit="return confirm('Delete this blog?')"
+                          style="margin-left:auto;">
+                        <input type="hidden" name="id" value="@Model.Blog.Id" />
+                        <button type="submit" class="action-btn danger">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /></svg>
+                            Delete
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="comments-section">
+            <h3>💬 Comments (@Model.Blog.Comments.Count)</h3>
+
+            <div class="comment-form-row">
+                <div class="comment-avatar">
+                    @(User.Identity?.Name?.Substring(0, 1).ToUpper())
+                </div>
+                <form method="post" asp-page-handler="AddComment" class="comment-form-wrap">
+                    <input type="hidden" name="blogId" value="@Model.Blog.Id" />
+                    <textarea class="sb-input" name="content" rows="2"
+                              placeholder="Write a comment..."
+                              style="min-height:60px;" required></textarea>
+                    <div style="display:flex; justify-content:flex-end;">
+                        <button type="submit" class="btn-sb-primary"
+                                style="font-size:0.82rem; padding:0.35rem 0.9rem;">
+                            Post comment
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            @if (!Model.Blog.Comments.Any())
+            {
+                <div style="text-align:center; padding:2rem; color:var(--text-muted); font-size:0.9rem;">
+                    No comments yet. Be the first!
+                </div>
+            }
+            else
+            {
+                @foreach (var comment in Model.Blog.Comments.OrderByDescending(c => c.Id))
+                {
+                    <div class="comment-item">
+                        <div class="comment-avatar">
+                            @(comment.Author?.FirstName?.Substring(0, 1).ToUpper())@(comment.Author?.LastName?.Substring(0, 1).ToUpper())
+                        </div>
+                        <div class="comment-content">
+                            <div class="comment-author-name">
+                                @comment.Author?.FirstName @comment.Author?.LastName
+                            </div>
+                            <p class="comment-text">@comment.Content</p>
+                            <div class="comment-actions">
+                                <form method="post" asp-page-handler="LikeComment">
+                                    <input type="hidden" name="commentId" value="@comment.Id" />
+                                    <button type="submit" class="comment-action-btn">
+                                        ❤️ @comment.Likes
+                                    </button>
+                                </form>
+                                @if (User.IsInRole("Admin") || comment.Author?.Id == Model.CurrentUserId)
+                                {
+                                    <form method="post" asp-page-handler="DeleteComment"
+                                          onsubmit="return confirm('Delete comment?')">
+                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                        <button type="submit" class="comment-action-btn"
+                                                style="color:#EF4444;">
+                                            🗑 Delete
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="blog-sidebar">
+        <div class="sidebar-card">
+            <h4>About the Author</h4>
+            <div class="author-profile">
+                <div class="author-avatar-lg">
+                    @(Model.Blog.Author?.FirstName?.Substring(0, 1).ToUpper())@(Model.Blog.Author?.LastName?.Substring(0, 1).ToUpper())
+                </div>
+                <div class="author-name">@Model.Blog.Author?.FirstName @Model.Blog.Author?.LastName</div>
+                <div class="author-nationality">@Model.Blog.Author?.Nationality</div>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <h4>Blog Info</h4>
+            <div style="display:flex; flex-direction:column; gap:0.6rem;">
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Published</span>
+                    <span style="font-weight:500; color:var(--navy);">
+                        @(Model.Blog.PublishedAt?.ToString("MMM dd, yyyy") ?? "Draft")
+                    </span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Views</span>
+                    <span style="font-weight:500; color:var(--navy);">@Model.Blog.Views</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Likes</span>
+                    <span style="font-weight:500; color:var(--navy);">@Model.Blog.Likes</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Comments</span>
+                    <span style="font-weight:500; color:var(--navy);">@Model.Blog.Comments.Count</span>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Blog.Tags.Any())
+        {
+            <div class="sidebar-card">
+                <h4>Tags</h4>
+                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                    @foreach (var tag in Model.Blog.Tags)
+                    {
+                        <span class="blog-header-tag">@tag.Name</span>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="sidebar-card" style="background:var(--cream);">
+            <h4>🤖 AI Summary</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">
+                AI-generated summaries coming soon!
+            </p>
+        </div>
+    </div>
+</div>

@@ -187,11 +187,17 @@ namespace StudyBuddy.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PublishedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Views = table.Column<int>(type: "int", nullable: false),
-                    Likes = table.Column<int>(type: "int", nullable: false)
+                    Likes = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Blogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Blogs_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Blogs_AspNetUsers_AuthorId",
                         column: x => x.AuthorId,
@@ -464,6 +470,11 @@ namespace StudyBuddy.Migrations
                 name: "IX_BlogBlogTag_TagsId",
                 table: "BlogBlogTag",
                 column: "TagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Blogs_ApplicationUserId",
+                table: "Blogs",
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Blogs_AuthorId",

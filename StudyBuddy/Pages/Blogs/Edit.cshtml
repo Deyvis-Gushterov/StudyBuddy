@@ -1,0 +1,294 @@
+﻿@page "{id:int}"
+@model StudyBuddy.Pages.BlogPages.EditModel
+@{
+    ViewData["Title"] = "Edit Blog";
+}
+
+<style>
+    .create-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .create-form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .create-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: sticky;
+        top: 80px;
+    }
+
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .sidebar-card h4 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 0.75rem;
+    }
+
+    .char-count { font-size: 0.75rem; color: var(--text-muted); text-align: right; margin-top: 3px; }
+    .char-count.warning { color: #D97706; }
+    .char-count.danger  { color: #DC2626; }
+
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .edit-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FCD34D;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 3px 12px;
+        border-radius: 20px;
+        margin-bottom: 1.25rem;
+    }
+
+    .tag-input-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0.5rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        background: var(--white);
+        min-height: 44px;
+        align-items: center;
+        transition: border-color 0.15s;
+        cursor: text;
+    }
+
+    .tag-input-wrap:focus-within { border-color: var(--navy); }
+
+    .tag-chip {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--navy);
+        color: var(--white);
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .tag-chip-remove { cursor: pointer; opacity: 0.7; font-size: 0.85rem; line-height: 1; }
+    .tag-chip-remove:hover { opacity: 1; }
+
+    .tag-real-input {
+        border: none;
+        outline: none;
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        background: transparent;
+        min-width: 120px;
+        flex: 1;
+    }
+
+    @@media (max-width: 768px) {
+        .create-layout { grid-template-columns: 1fr; }
+        .create-sidebar { position: static; }
+    }
+</style>
+
+@if (Model.Blog == null)
+{
+    <div class="sb-alert sb-alert-danger">Blog not found.</div>
+    return;
+}
+
+<div class="sb-page-header">
+    <div>
+        <h1>Edit Blog</h1>
+        <p>Update your post and save changes</p>
+    </div>
+    <a class="btn-sb-ghost" asp-page="/Blogs/Details" asp-route-id="@Model.Blog.Id">← Back to Blog</a>
+</div>
+
+<div class="create-layout">
+    <div class="create-form-card">
+        <div class="edit-badge">✏️ Editing — @Model.Blog.Title</div>
+
+        <form method="post">
+            <input type="hidden" asp-for="Input.Id" />
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="sb-alert sb-alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="margin:0;">@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Title">Title</label>
+                <input class="sb-input" asp-for="Input.Title"
+                       id="titleInput" maxlength="100" />
+                <div class="char-count" id="titleCount">0 / 100</div>
+                <span asp-validation-for="Input.Title" class="field-validation-error"></span>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Summary">Summary</label>
+                <input class="sb-input" asp-for="Input.Summary"
+                       id="summaryInput" maxlength="300" />
+                <div class="char-count" id="summaryCount">0 / 300</div>
+                <span asp-validation-for="Input.Summary" class="field-validation-error"></span>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label">Tags</label>
+                <div class="tag-input-wrap" id="tagWrap"
+                     onclick="document.getElementById('tagInput').focus()">
+                    <input type="text" id="tagInput" class="tag-real-input"
+                           placeholder="Type a tag and press Enter..." maxlength="30" />
+                </div>
+                <input type="hidden" asp-for="Input.Tags" id="tagsHidden" />
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                    Press Enter or comma to add a tag. Max 5 tags.
+                </p>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Content">Content</label>
+                <textarea class="sb-input" asp-for="Input.Content"
+                          id="contentInput" rows="16"></textarea>
+                <div class="char-count" id="contentCount">0 / 10000</div>
+                <span asp-validation-for="Input.Content" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-actions">
+                <a class="btn-sb-ghost"
+                   asp-page="/Blogs/Details"
+                   asp-route-id="@Model.Blog.Id">Cancel</a>
+                <button type="submit" class="btn-sb-amber">Save Changes →</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="create-sidebar">
+        <div class="sidebar-card">
+            <h4>📊 Current Stats</h4>
+            <div style="display:flex; flex-direction:column; gap:0.6rem;">
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Status</span>
+                    <span style="font-weight:600; color:var(--navy);">
+                        @(Model.Blog.PublishedAt != null ? "Published" : "Draft")
+                    </span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Views</span>
+                    <span style="font-weight:600; color:var(--navy);">@Model.Blog.Views</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Likes</span>
+                    <span style="font-weight:600; color:var(--navy);">@Model.Blog.Likes</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Created</span>
+                    <span style="font-weight:600; color:var(--navy);">@Model.Blog.CreatedAt.ToString("MMM dd, yyyy")</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-card" style="background:var(--cream);">
+            <h4>⚠️ Note</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.6;">
+                Changes are visible immediately. Your views and likes will be preserved.
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateCount(inputId, countId, max) {
+            const el = document.getElementById(inputId);
+            const ct = document.getElementById(countId);
+            if (!el || !ct) return;
+            const update = () => {
+                const len = el.value.length;
+                ct.textContent = `${len} / ${max}`;
+                ct.className = 'char-count';
+                if (len > max * 0.9) ct.classList.add('warning');
+                if (len >= max)      ct.classList.add('danger');
+            };
+            el.addEventListener('input', update); update();
+        }
+        updateCount('titleInput',   'titleCount',   100);
+        updateCount('summaryInput', 'summaryCount', 300);
+        updateCount('contentInput', 'contentCount', 10000);
+
+        // Tag system — pre-populate from existing tags
+        const existingTags = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                Model.Blog?.Tags.Select(t => t.Name).ToList() ?? new List<string>()
+            )
+        );
+        const tags = [...existingTags];
+        const tagInput   = document.getElementById('tagInput');
+        const tagWrap    = document.getElementById('tagWrap');
+        const tagsHidden = document.getElementById('tagsHidden');
+
+        function renderTags() {
+            tagWrap.querySelectorAll('.tag-chip').forEach(c => c.remove());
+            tags.forEach((tag, i) => {
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `${tag}<span class="tag-chip-remove" data-i="${i}">×</span>`;
+                tagWrap.insertBefore(chip, tagInput);
+            });
+            tagsHidden.value = tags.join(',');
+            tagInput.style.display = tags.length >= 5 ? 'none' : '';
+        }
+
+        tagInput.addEventListener('keydown', e => {
+            if ((e.key === 'Enter' || e.key === ',') && tagInput.value.trim()) {
+                e.preventDefault();
+                const val = tagInput.value.trim().replace(/,/g, '');
+                if (val && tags.length < 5 && !tags.includes(val)) {
+                    tags.push(val); tagInput.value = ''; renderTags();
+                }
+            }
+            if (e.key === 'Backspace' && !tagInput.value && tags.length) {
+                tags.pop(); renderTags();
+            }
+        });
+
+        tagWrap.addEventListener('click', e => {
+            if (e.target.classList.contains('tag-chip-remove')) {
+                tags.splice(+e.target.dataset.i, 1); renderTags();
+            }
+        });
+
+        renderTags();
+    </script>
+}

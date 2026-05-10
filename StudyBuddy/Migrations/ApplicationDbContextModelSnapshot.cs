@@ -294,6 +294,9 @@ namespace StudyBuddy.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("AuthorId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -327,6 +330,8 @@ namespace StudyBuddy.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("AuthorId");
 
@@ -644,6 +649,10 @@ namespace StudyBuddy.Migrations
 
             modelBuilder.Entity("StudyBuddy.Models.Blog", b =>
                 {
+                    b.HasOne("StudyBuddy.Models.ApplicationUser", null)
+                        .WithMany("SavedBlogs")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("StudyBuddy.Models.ApplicationUser", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
@@ -748,6 +757,8 @@ namespace StudyBuddy.Migrations
             modelBuilder.Entity("StudyBuddy.Models.ApplicationUser", b =>
                 {
                     b.Navigation("PersonalNotes");
+
+                    b.Navigation("SavedBlogs");
                 });
 
             modelBuilder.Entity("StudyBuddy.Models.Blog", b =>

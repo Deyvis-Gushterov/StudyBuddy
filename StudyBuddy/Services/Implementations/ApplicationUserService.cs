@@ -228,5 +228,70 @@ namespace StudyBuddy.Services.Implementations
 
             return user.SavedNotes.ToList();
         }
+
+        public async Task<bool> SaveBlogAsync(string userId, int blogId)
+        {
+            var user = await context.Users
+                .Include(u => u.SavedBlogs)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            var blog = await context.Blogs
+                .FirstOrDefaultAsync(u => u.Id == blogId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (blog == null)
+            {
+                return false;
+            }
+
+            if (user.SavedBlogs.Contains(blog))
+            {
+                return false;
+            }
+
+            user.SavedBlogs.Add(blog);
+            await context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> UnsaveBlogAsync(string userId, int blogId)
+        {
+            var user = await context.Users
+                .Include(u => u.SavedBlogs)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            var blog = await context.Blogs
+                .FirstOrDefaultAsync(u => u.Id == blogId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (blog == null)
+            {
+                return false;
+            }
+
+            user.SavedBlogs.Remove(blog);
+            await context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<List<Blog>> GetSavedBlogsAsync(string userId)
+        {
+            var user = await context.Users
+                .Include(u => u.SavedBlogs)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return new List<Blog>();
+            }
+
+            return user.SavedBlogs.ToList();
+        }
     }
 }

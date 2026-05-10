@@ -1,0 +1,240 @@
+﻿@page "{id:int}"
+@model StudyBuddy.Pages.NotePages.EditModel
+@{
+    ViewData["Title"] = "Edit Note";
+}
+
+<style>
+    .create-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .create-form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .create-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .sidebar-card h4 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 0.75rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .char-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: right;
+        margin-top: 3px;
+    }
+
+    .char-count.warning { color: #D97706; }
+    .char-count.danger { color: #DC2626; }
+
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .edit-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #DBEAFE;
+        color: #1E40AF;
+        border: 1px solid #93C5FD;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-bottom: 1.25rem;
+    }
+
+    @@media (max-width: 768px) {
+        .create-layout { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+@if (Model.Note == null)
+{
+    <div class="sb-alert sb-alert-danger">Note not found or you don't have permission to edit it.</div>
+    return;
+}
+
+<!-- Page Header -->
+<div class="sb-page-header">
+    <div>
+        <h1>Edit Note</h1>
+        <p>Update your note — changes are published immediately</p>
+    </div>
+    <a class="btn-sb-ghost" asp-page="/Notes/Details" asp-route-id="@Model.Note.Id">← Back to Note</a>
+</div>
+
+<div class="create-layout">
+    <!-- Main Form -->
+    <div class="create-form-card">
+        <div class="edit-badge">
+            ✏️ Editing: @Model.Note.Topic
+        </div>
+
+        <form method="post">
+            <input type="hidden" asp-for="Input.Id" />
+            <div asp-validation-summary="ModelOnly" class="sb-alert sb-alert-danger"></div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Topic">Topic</label>
+                <input class="sb-input" asp-for="Input.Topic" placeholder="e.g. Integration by Parts" />
+                <span asp-validation-for="Input.Topic" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="sb-form-group">
+                    <label class="sb-label" asp-for="Input.Subject">Subject</label>
+                    <select class="sb-input" asp-for="Input.Subject">
+                        <option value="">Select subject...</option>
+                        <option value="Math">Math</option>
+                        <option value="Science">Science</option>
+                        <option value="History">History</option>
+                        <option value="Literature">Literature</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Economics">Economics</option>
+                        <option value="Philosophy">Philosophy</option>
+                        <option value="Geography">Geography</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Input.Subject" class="field-validation-error"></span>
+                </div>
+                <div class="sb-form-group">
+                    <label class="sb-label">Originally Created</label>
+                    <input class="sb-input" type="text"
+                           value="@Model.Note.DateOfCreation.ToString("MMMM dd, yyyy")"
+                           disabled
+                           style="background:var(--cream); color:var(--text-muted);" />
+                </div>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.BriefExplanation">Brief Explanation</label>
+                <input class="sb-input" asp-for="Input.BriefExplanation"
+                       placeholder="A short summary of what these notes cover..."
+                       id="briefInput"
+                       maxlength="200" />
+                <div class="char-count" id="briefCount">0 / 200</div>
+                <span asp-validation-for="Input.BriefExplanation" class="field-validation-error"></span>
+            </div>
+
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Content">Notes Content</label>
+                <textarea class="sb-input" asp-for="Input.Content"
+                          placeholder="Write your full notes here..."
+                          id="contentInput"
+                          rows="12"
+                          maxlength="5000"></textarea>
+                <div class="char-count" id="contentCount">0 / 5000</div>
+                <span asp-validation-for="Input.Content" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-actions">
+                <a class="btn-sb-ghost" asp-page="/Notes/Details" asp-route-id="@Model.Note.Id">Cancel</a>
+                <button type="submit" class="btn-sb-primary">Save Changes →</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="create-sidebar">
+        <div class="sidebar-card" style="border-color:#93C5FD; background:#EFF6FF;">
+            <h4 style="color:#1E40AF;">📋 You are editing</h4>
+            <p style="font-size:0.82rem; color:#3B82F6; margin:0 0 0.5rem;">
+                <strong>@Model.Note.Topic</strong>
+            </p>
+            <p style="font-size:0.78rem; color:#60A5FA; margin:0;">
+                Originally published @Model.Note.DateOfCreation.ToString("MMM dd, yyyy")
+            </p>
+        </div>
+
+        <div class="sidebar-card">
+            <h4>⚠️ Keep in mind</h4>
+            <div style="display:flex; flex-direction:column; gap:0.6rem;">
+                <div style="display:flex; gap:0.6rem; align-items:flex-start;">
+                    <span style="color:var(--amber); font-size:0.8rem; margin-top:1px;">•</span>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Changes are published immediately and visible to all users.</p>
+                </div>
+                <div style="display:flex; gap:0.6rem; align-items:flex-start;">
+                    <span style="color:var(--amber); font-size:0.8rem; margin-top:1px;">•</span>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">Likes and saves are preserved when you edit.</p>
+                </div>
+                <div style="display:flex; gap:0.6rem; align-items:flex-start;">
+                    <span style="color:var(--amber); font-size:0.8rem; margin-top:1px;">•</span>
+                    <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">You cannot change the original creation date.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <h4>📊 Note Stats</h4>
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Likes</span>
+                    <span style="font-weight:600; color:var(--navy);">@Model.Note.Likes</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+                    <span style="color:var(--text-muted);">Subject</span>
+                    <span style="font-weight:600; color:var(--navy);">@Model.Note.Subject</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateCount(inputId, countId, max) {
+            const input = document.getElementById(inputId);
+            const count = document.getElementById(countId);
+            if (!input || !count) return;
+            const initial = input.value.length;
+            count.textContent = `${initial} / ${max}`;
+            input.addEventListener('input', () => {
+                const len = input.value.length;
+                count.textContent = `${len} / ${max}`;
+                count.className = 'char-count';
+                if (len > max * 0.9) count.classList.add('warning');
+                if (len >= max) count.classList.add('danger');
+            });
+        }
+        updateCount('briefInput', 'briefCount', 200);
+        updateCount('contentInput', 'contentCount', 5000);
+    </script>
+}

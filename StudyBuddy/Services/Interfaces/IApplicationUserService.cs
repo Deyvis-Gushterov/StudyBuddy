@@ -24,5 +24,10 @@ namespace StudyBuddy.Services.Interfaces
         Task<bool> UnsaveNoteAsync(string userId, int noteId);
         Task<List<Note>> GetSavedNotesAsync(string userId);
 
+        //Saved Blogs
+        Task<bool> SaveBlogAsync(string userId, int blogId);
+        Task<bool> UnsaveBlogAsync(string userId, int blogId);
+        Task<List<Blog>> GetSavedBlogsAsync(string userId);
+
     }
 }

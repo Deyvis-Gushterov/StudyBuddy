@@ -1,0 +1,369 @@
+﻿@page
+@model StudyBuddy.Pages.BlogPages.IndexModel
+@{
+    ViewData["Title"] = "Blogs";
+}
+
+<style>
+    .blogs-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .blogs-search {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        flex: 1;
+        max-width: 380px;
+        transition: border-color 0.15s;
+    }
+
+    .blogs-search:focus-within { border-color: var(--navy); }
+
+    .blogs-search svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--text-muted);
+        flex-shrink: 0;
+    }
+
+    .blogs-search input {
+        border: none;
+        outline: none;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        background: transparent;
+        width: 100%;
+    }
+
+    .blogs-search input::placeholder { color: var(--text-muted); }
+
+    /* Featured blog */
+    .blog-featured {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 2rem;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-featured::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--navy), var(--amber));
+    }
+
+    .blog-featured-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .blog-featured h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 0.75rem;
+        line-height: 1.3;
+    }
+
+    .blog-featured-summary {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 1.25rem;
+    }
+
+    .blog-featured-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .blog-featured-author {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .blog-mini-avatar {
+        width: 28px;
+        height: 28px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--amber);
+    }
+
+    .blog-author-name {
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    .blog-stat {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Blog grid */
+    .blogs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .blog-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.75rem;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(27,42,74,0.1);
+        border-color: transparent;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .blog-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .blog-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .blog-tag {
+        font-size: 0.68rem;
+        font-weight: 500;
+        padding: 2px 8px;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        color: var(--text-muted);
+    }
+
+    .blog-card-title {
+        font-family: var(--font-heading);
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--navy);
+        line-height: 1.35;
+        margin: 0;
+    }
+
+    .blog-card-summary {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.65;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .blog-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+    }
+
+    .blog-card-date {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .blog-card-stats {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    /* Section heading */
+    .section-heading {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-heading::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+        margin-left: 0.5rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        grid-column: 1 / -1;
+    }
+
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-size: 1.25rem; color: var(--navy); margin-bottom: 0.5rem; }
+    .empty-state p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    @@media (max-width: 768px) {
+        .blog-featured { grid-template-columns: 1fr; }
+        .blogs-grid { grid-template-columns: 1fr; }
+        .blogs-toolbar { flex-direction: column; align-items: stretch; }
+        .blogs-search { max-width: 100%; }
+    }
+</style>
+
+<!-- Page Header -->
+<div class="sb-page-header">
+    <div>
+        <h1>Blogs</h1>
+        <p>Read and discover articles written by the community</p>
+    </div>
+    <a class="btn-sb-primary" asp-page="/Blogs/Create">+ Write Blog</a>
+</div>
+
+<!-- Toolbar -->
+<div class="blogs-toolbar">
+    <div class="blogs-search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search blogs by title or summary..." />
+    </div>
+</div>
+
+@if (Model.Blogs.Any())
+{
+    <!-- Featured (latest) blog -->
+    var featured = Model.Blogs.First();
+    <div class="blog-featured">
+        <div>
+            <div class="blog-featured-label">✨ Latest Post</div>
+            <h2>@featured.Title</h2>
+            <p class="blog-featured-summary">@featured.Summary</p>
+            <div class="blog-featured-meta">
+                <div class="blog-featured-author">
+                    <div class="blog-mini-avatar">
+                        @(featured.Author?.FirstName?.Substring(0,1).ToUpper())@(featured.Author?.LastName?.Substring(0,1).ToUpper())
+                    </div>
+                    <span class="blog-author-name">@featured.Author?.FirstName @featured.Author?.LastName</span>
+                </div>
+                <span class="blog-stat">❤️ @featured.Likes</span>
+                <span class="blog-stat">👁️ @featured.Views views</span>
+                <a class="btn-sb-primary" asp-page="/Blogs/Details" asp-route-id="@featured.Id"
+                   style="font-size:0.82rem; padding:0.35rem 1rem;">
+                    Read now →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Blogs -->
+    <div class="section-heading">All Posts</div>
+    <div class="blogs-grid" id="blogsGrid">
+        @foreach (var blog in Model.Blogs)
+        {
+            <a class="blog-card" asp-page="/Blogs/Details" asp-route-id="@blog.Id">
+                <div class="blog-card-top">
+                    <div class="blog-tags">
+                        @foreach (var tag in blog.Tags.Take(3))
+                        {
+                            <span class="blog-tag">@tag.Name</span>
+                        }
+                    </div>
+                </div>
+                <h3 class="blog-card-title">@blog.Title</h3>
+                <p class="blog-card-summary">@blog.Summary</p>
+                <div class="blog-card-footer">
+                    <div class="blog-featured-author">
+                        <div class="blog-mini-avatar">
+                            @(blog.Author?.FirstName?.Substring(0,1).ToUpper())@(blog.Author?.LastName?.Substring(0,1).ToUpper())
+                        </div>
+                        <span class="blog-card-date">@blog.Author?.FirstName · @blog.PublishedAt?.ToString("MMM dd, yyyy")</span>
+                    </div>
+                    <div class="blog-card-stats">
+                        <span class="blog-stat">❤️ @blog.Likes</span>
+                        <span class="blog-stat">👁️ @blog.Views</span>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <div class="empty-icon">✍️</div>
+        <h3>No blogs yet</h3>
+        <p>Be the first to share your knowledge with the community!</p>
+        <a class="btn-sb-primary" asp-page="/Blogs/Create">Write the first blog</a>
+    </div>
+}
+
+@section Scripts {
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.blog-card');
+
+    searchInput?.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        cards.forEach(card => {
+            const title   = card.querySelector('.blog-card-title')?.textContent.toLowerCase() || '';
+            const summary = card.querySelector('.blog-card-summary')?.textContent.toLowerCase() || '';
+            card.style.display = (!query || title.includes(query) || summary.includes(query)) ? 'flex' : 'none';
+        });
+    });
+</script>
+}

@@ -1,0 +1,659 @@
+﻿@page
+@model StudyBuddy.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    /* ── Stats Overview ── */
+    .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .admin-stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .admin-stat-icon {
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .admin-stat-num {
+        font-family: var(--font-heading);
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--navy);
+    }
+
+    .admin-stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .admin-stat-card.highlight {
+        background: var(--navy);
+        border-color: var(--navy);
+    }
+
+    .admin-stat-card.highlight .admin-stat-num,
+    .admin-stat-card.highlight .admin-stat-label { color: var(--white); }
+
+    .admin-stat-card.warning-card { border-color: #FCD34D; }
+    .admin-stat-card.warning-card .admin-stat-num { color: #D97706; }
+
+    /* ── Tabs ── */
+    .admin-tabs {
+        display: flex;
+        gap: 0.25rem;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 2rem;
+        overflow-x: auto;
+        padding-bottom: 0;
+    }
+
+    .tab-btn {
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.15s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .tab-btn:hover { color: var(--navy); }
+    .tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
+
+    .tab-count {
+        background: var(--cream);
+        border: 1px solid var(--border);
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 1px 7px;
+        border-radius: 20px;
+        color: var(--text-muted);
+    }
+
+    .tab-btn.active .tab-count { background: var(--navy); border-color: var(--navy); color: var(--white); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Table ── */
+    .admin-table-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+    }
+
+    .admin-table-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .admin-table-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin: 0;
+    }
+
+    .admin-search {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.35rem 0.75rem;
+    }
+
+    .admin-search input {
+        border: none;
+        outline: none;
+        font-family: var(--font-body);
+        font-size: 0.82rem;
+        background: transparent;
+        color: var(--text-dark);
+        width: 180px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead th {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.75rem 1.5rem;
+        background: var(--cream);
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--cream); }
+
+    td {
+        padding: 0.85rem 1.5rem;
+        font-size: 0.875rem;
+        color: var(--text-dark);
+        vertical-align: middle;
+    }
+
+    .td-muted { color: var(--text-muted); font-size: 0.8rem; }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .user-cell-avatar {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--amber);
+    }
+
+    .user-cell-name { font-weight: 500; color: var(--navy); font-size: 0.875rem; }
+    .user-cell-email { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Badges */
+    .badge {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+
+    .badge-admin    { background: #FEF3C7; color: #92400E; }
+    .badge-user     { background: var(--cream); color: var(--text-muted); border: 1px solid var(--border); }
+    .badge-resolved { background: #D1FAE5; color: #065F46; }
+    .badge-pending  { background: #FEE2E2; color: #991B1B; }
+    .badge-read     { background: #DBEAFE; color: #1E40AF; }
+    .badge-unread   { background: #FEF3C7; color: #92400E; }
+    .badge-published{ background: #D1FAE5; color: #065F46; }
+    .badge-draft    { background: #FEF3C7; color: #92400E; }
+
+    /* Table action buttons */
+    .tbl-btn {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--white);
+        color: var(--text-muted);
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s;
+        display: inline-block;
+    }
+
+    .tbl-btn:hover { border-color: var(--navy); color: var(--navy); text-decoration: none; }
+    .tbl-btn.danger:hover { border-color: #EF4444; color: #EF4444; background: #FEE2E2; }
+    .tbl-btn.success:hover { border-color: #10B981; color: #10B981; background: #D1FAE5; }
+    .tbl-btn.promote { border-color: #FCD34D; color: #D97706; background: #FEF3C7; }
+    .tbl-btn.promote:hover { border-color: #D97706; }
+
+    .tbl-actions { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+
+    /* Empty row */
+    .empty-row td {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    @@media (max-width: 768px) {
+        .admin-stats { grid-template-columns: repeat(2, 1fr); }
+        table { font-size: 0.8rem; }
+        td, thead th { padding: 0.65rem 0.75rem; }
+    }
+</style>
+
+<!-- Page Header -->
+<div class="sb-page-header">
+    <div>
+        <h1>Admin Dashboard</h1>
+        <p>Manage users, content, reports and feedback</p>
+    </div>
+    <span class="sb-admin-badge" style="font-size:0.8rem; padding:4px 14px;">⭐ Admin Panel</span>
+</div>
+
+<!-- Stats -->
+<div class="admin-stats">
+    <div class="admin-stat-card highlight">
+        <div class="admin-stat-icon">👥</div>
+        <div class="admin-stat-num">@Model.Users.Count</div>
+        <div class="admin-stat-label">Total Users</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon">📝</div>
+        <div class="admin-stat-num">@Model.Notes.Count</div>
+        <div class="admin-stat-label">Total Notes</div>
+    </div>
+    <div class="admin-stat-card">
+        <div class="admin-stat-icon">✍️</div>
+        <div class="admin-stat-num">@Model.Blogs.Count</div>
+        <div class="admin-stat-label">Total Blogs</div>
+    </div>
+    <div class="admin-stat-card @(Model.Reports.Any(r => !r.IsResolved) ? "warning-card" : "")">
+        <div class="admin-stat-icon">🚩</div>
+        <div class="admin-stat-num">@Model.Reports.Count(r => !r.IsResolved)</div>
+        <div class="admin-stat-label">Pending Reports</div>
+    </div>
+    <div class="admin-stat-card @(Model.Feedbacks.Any(f => !f.IsRead) ? "warning-card" : "")">
+        <div class="admin-stat-icon">💬</div>
+        <div class="admin-stat-num">@Model.Feedbacks.Count(f => !f.IsRead)</div>
+        <div class="admin-stat-label">Unread Feedback</div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="admin-tabs">
+    <button class="tab-btn active" onclick="switchTab('users', this)">
+        👥 Users <span class="tab-count">@Model.Users.Count</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('reports', this)">
+        🚩 Reports <span class="tab-count">@Model.Reports.Count</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('feedback', this)">
+        💬 Feedback <span class="tab-count">@Model.Feedbacks.Count</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('notes', this)">
+        📝 Notes <span class="tab-count">@Model.Notes.Count</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('blogs', this)">
+        ✍️ Blogs <span class="tab-count">@Model.Blogs.Count</span>
+    </button>
+</div>
+
+<!-- Users Tab -->
+<div class="tab-panel active" id="tab-users">
+    <div class="admin-table-wrap">
+        <div class="admin-table-header">
+            <h3 class="admin-table-title">All Users</h3>
+            <div class="admin-search">
+                <input type="text" placeholder="Search users..." oninput="filterTable('usersTable', this.value)" />
+            </div>
+        </div>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Nationality</th>
+                    <th>Age</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Users.Any())
+                {
+                    <tr class="empty-row"><td colspan="5">No users found.</td></tr>
+                }
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-cell-avatar">
+                                    @(user.FirstName?.Substring(0,1).ToUpper())@(user.LastName?.Substring(0,1).ToUpper())
+                                </div>
+                                <div>
+                                    <div class="user-cell-name">@user.FirstName @user.LastName</div>
+                                    <div class="user-cell-email">@user.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="td-muted">@user.Nationality</td>
+                        <td class="td-muted">@user.Age</td>
+                        <td>
+                            @if (Model.UserRoles.TryGetValue(user.Id, out var role))
+                            {
+                                <span class="badge @(role == "Admin" ? "badge-admin" : "badge-user")">@role</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="tbl-actions">
+                                @if (Model.UserRoles.TryGetValue(user.Id, out var userRole) && userRole != "Admin")
+                                {
+                                    <form method="post" asp-page-handler="PromoteUser">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" class="tbl-btn promote">Make Admin</button>
+                                    </form>
+                                }
+                                <form method="post" asp-page-handler="DeleteUser"
+                                      onsubmit="return confirm('Delete user @user.Email? This cannot be undone.')">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <button type="submit" class="tbl-btn danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Reports Tab -->
+<div class="tab-panel" id="tab-reports">
+    <div class="admin-table-wrap">
+        <div class="admin-table-header">
+            <h3 class="admin-table-title">Reports</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Reporter</th>
+                    <th>Reason</th>
+                    <th>Details</th>
+                    <th>Content</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Reports.Any())
+                {
+                    <tr class="empty-row"><td colspan="7">No reports found.</td></tr>
+                }
+                @foreach (var report in Model.Reports.OrderBy(r => r.IsResolved))
+                {
+                    <tr>
+                        <td>
+                            <div class="user-cell-name">@report.Reporter?.FirstName @report.Reporter?.LastName</div>
+                            <div class="user-cell-email">@report.Reporter?.Email</div>
+                        </td>
+                        <td>@report.Reason</td>
+                        <td class="td-muted">@(report.Details ?? "—")</td>
+                        <td class="td-muted">
+                            @if (report.BlogId != null) { <span>Blog #@report.BlogId</span> }
+                            else if (report.NoteId != null) { <span>Note #@report.NoteId</span> }
+                            else if (report.CommentId != null) { <span>Comment #@report.CommentId</span> }
+                            else { <span>—</span> }
+                        </td>
+                        <td>
+                            <span class="badge @(report.IsResolved ? "badge-resolved" : "badge-pending")">
+                                @(report.IsResolved ? "Resolved" : "Pending")
+                            </span>
+                        </td>
+                        <td class="td-muted">@report.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            <div class="tbl-actions">
+                                @if (!report.IsResolved)
+                                {
+                                    <form method="post" asp-page-handler="ResolveReport">
+                                        <input type="hidden" name="reportId" value="@report.Id" />
+                                        <button type="submit" class="tbl-btn success">Resolve</button>
+                                    </form>
+                                }
+                                <form method="post" asp-page-handler="DeleteReport"
+                                      onsubmit="return confirm('Delete this report?')">
+                                    <input type="hidden" name="reportId" value="@report.Id" />
+                                    <button type="submit" class="tbl-btn danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Feedback Tab -->
+<div class="tab-panel" id="tab-feedback">
+    <div class="admin-table-wrap">
+        <div class="admin-table-header">
+            <h3 class="admin-table-title">Feedback</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>Message</th>
+                    <th>Rating</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Feedbacks.Any())
+                {
+                    <tr class="empty-row"><td colspan="6">No feedback yet.</td></tr>
+                }
+                @foreach (var fb in Model.Feedbacks.OrderBy(f => f.IsRead))
+                {
+                    <tr>
+                        <td>
+                            <div class="user-cell-name">@fb.Sender?.FirstName @fb.Sender?.LastName</div>
+                            <div class="user-cell-email">@fb.Sender?.Email</div>
+                        </td>
+                        <td style="max-width:300px;">@fb.Message</td>
+                        <td>
+                            @if (fb.Rating != null)
+                            {
+                                @for (int i = 0; i < fb.Rating; i++) { <span>⭐</span> }
+                            }
+                            else { <span class="td-muted">—</span> }
+                        </td>
+                        <td>
+                            <span class="badge @(fb.IsRead ? "badge-read" : "badge-unread")">
+                                @(fb.IsRead ? "Read" : "Unread")
+                            </span>
+                        </td>
+                        <td class="td-muted">@fb.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            <div class="tbl-actions">
+                                @if (!fb.IsRead)
+                                {
+                                    <form method="post" asp-page-handler="MarkFeedbackRead">
+                                        <input type="hidden" name="feedbackId" value="@fb.Id" />
+                                        <button type="submit" class="tbl-btn success">Mark Read</button>
+                                    </form>
+                                }
+                                <form method="post" asp-page-handler="DeleteFeedback"
+                                      onsubmit="return confirm('Delete this feedback?')">
+                                    <input type="hidden" name="feedbackId" value="@fb.Id" />
+                                    <button type="submit" class="tbl-btn danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Notes Tab -->
+<div class="tab-panel" id="tab-notes">
+    <div class="admin-table-wrap">
+        <div class="admin-table-header">
+            <h3 class="admin-table-title">All Notes</h3>
+            <div class="admin-search">
+                <input type="text" placeholder="Search notes..." oninput="filterTable('notesTable', this.value)" />
+            </div>
+        </div>
+        <table id="notesTable">
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Subject</th>
+                    <th>Creator</th>
+                    <th>Likes</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Notes.Any())
+                {
+                    <tr class="empty-row"><td colspan="6">No notes found.</td></tr>
+                }
+                @foreach (var note in Model.Notes.OrderByDescending(n => n.DateOfCreation))
+                {
+                    <tr>
+                        <td style="font-weight:500; color:var(--navy);">@note.Topic</td>
+                        <td class="td-muted">@note.Subject</td>
+                        <td>@note.Creator?.FirstName @note.Creator?.LastName</td>
+                        <td class="td-muted">❤️ @note.Likes</td>
+                        <td class="td-muted">@note.DateOfCreation.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            <div class="tbl-actions">
+                                <a class="tbl-btn"
+                                   asp-page="/Notes/Details"
+                                   asp-route-id="@note.Id">View</a>
+                                <form method="post" asp-page-handler="DeleteNote"
+                                      onsubmit="return confirm('Delete this note?')">
+                                    <input type="hidden" name="noteId" value="@note.Id" />
+                                    <button type="submit" class="tbl-btn danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Blogs Tab -->
+<div class="tab-panel" id="tab-blogs">
+    <div class="admin-table-wrap">
+        <div class="admin-table-header">
+            <h3 class="admin-table-title">All Blogs</h3>
+            <div class="admin-search">
+                <input type="text" placeholder="Search blogs..." oninput="filterTable('blogsTable', this.value)" />
+            </div>
+        </div>
+        <table id="blogsTable">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Status</th>
+                    <th>Views</th>
+                    <th>Likes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Blogs.Any())
+                {
+                    <tr class="empty-row"><td colspan="6">No blogs found.</td></tr>
+                }
+                @foreach (var blog in Model.Blogs.OrderByDescending(b => b.CreatedAt))
+                {
+                    <tr>
+                        <td style="font-weight:500; color:var(--navy); max-width:200px;">@blog.Title</td>
+                        <td>@blog.Author?.FirstName @blog.Author?.LastName</td>
+                        <td>
+                            <span class="badge @(blog.PublishedAt != null ? "badge-published" : "badge-draft")">
+                                @(blog.PublishedAt != null ? "Published" : "Draft")
+                            </span>
+                        </td>
+                        <td class="td-muted">@blog.Views</td>
+                        <td class="td-muted">❤️ @blog.Likes</td>
+                        <td>
+                            <div class="tbl-actions">
+                                <a class="tbl-btn"
+                                   asp-page="/Blogs/Details"
+                                   asp-route-id="@blog.Id">View</a>
+                                @if (blog.PublishedAt == null)
+                                {
+                                    <form method="post" asp-page-handler="PublishBlog">
+                                        <input type="hidden" name="blogId" value="@blog.Id" />
+                                        <button type="submit" class="tbl-btn success">Publish</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form method="post" asp-page-handler="UnpublishBlog">
+                                        <input type="hidden" name="blogId" value="@blog.Id" />
+                                        <button type="submit" class="tbl-btn">Unpublish</button>
+                                    </form>
+                                }
+                                <form method="post" asp-page-handler="DeleteBlog"
+                                      onsubmit="return confirm('Delete this blog?')">
+                                    <input type="hidden" name="blogId" value="@blog.Id" />
+                                    <button type="submit" class="tbl-btn danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function filterTable(tableId, query) {
+        const rows = document.querySelectorAll(`#${tableId} tbody tr:not(.empty-row)`);
+        const q = query.toLowerCase();
+        rows.forEach(row => {
+            row.style.display = !q || row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+</script>
+}

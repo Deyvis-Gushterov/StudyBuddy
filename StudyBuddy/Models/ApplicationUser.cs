@@ -26,6 +26,7 @@ namespace StudyBuddy.Models
 
         public ICollection<Note> PersonalNotes { get; set; } = new List<Note>();
         public ICollection<Note> SavedNotes { get; set; } = new List<Note>();
+        public ICollection<Blog> SavedBlogs { get; set; } = new List<Blog>();
 
         public ICollection<ApplicationUser> Followers { get; set; } = new List<ApplicationUser>();
 

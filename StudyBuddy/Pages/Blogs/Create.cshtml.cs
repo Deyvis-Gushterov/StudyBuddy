@@ -15,18 +15,25 @@ namespace StudyBuddy.Pages.BlogPages
         private readonly IBlogService _blogService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly IAiService _aiService;
 
         public CreateModel(IBlogService blogService,
                            UserManager<ApplicationUser> userManager,
-                           ApplicationDbContext context)
+                           ApplicationDbContext context,
+                           IAiService aiService)
         {
             _blogService = blogService;
             _userManager = userManager;
             _context = context;
+            _aiService = aiService;
         }
 
         [BindProperty]
         public BlogInputModel Input { get; set; } = new();
+
+        // AI results
+        public string? AiSuggestions { get; set; }
+        public List<string>? SuggestedTags { get; set; }
 
         public void OnGet() { }
 
@@ -39,24 +46,7 @@ namespace StudyBuddy.Pages.BlogPages
             if (user == null)
                 return RedirectToPage("/Account/Login");
 
-            // Parse tags from comma-separated hidden input
-            var tagNames = (Input.Tags ?? "")
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(t => t.Trim())
-                .Where(t => !string.IsNullOrEmpty(t))
-                .Distinct()
-                .Take(5)
-                .ToList();
-
-            var tags = new List<BlogTag>();
-            foreach (var name in tagNames)
-            {
-                var existing = _context.BlogTags.FirstOrDefault(t => t.Name == name);
-                if (existing != null)
-                    tags.Add(existing);
-                else
-                    tags.Add(new BlogTag { Name = name });
-            }
+            var tags = await ParseTagsAsync(Input.Tags);
 
             var blog = new Blog
             {
@@ -78,6 +68,50 @@ namespace StudyBuddy.Pages.BlogPages
 
             return RedirectToPage("/Blogs/Details", new { id = result.Id });
         }
+
+        public async Task<IActionResult> OnPostSuggestAsync(string contentSnapshot)
+        {
+            if (string.IsNullOrWhiteSpace(contentSnapshot))
+            {
+                AiSuggestions = "Please write some content first before asking for suggestions.";
+                return Page();
+            }
+
+            AiSuggestions = await _aiService.GetWritingSuggestionsAsync(contentSnapshot);
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostSuggestTagsAsync(string contentSnapshot)
+        {
+            if (string.IsNullOrWhiteSpace(contentSnapshot))
+            {
+                SuggestedTags = new List<string> { "Please write some content first." };
+                return Page();
+            }
+
+            SuggestedTags = await _aiService.SuggestTagsAsync(contentSnapshot);
+            return Page();
+        }
+
+        private async Task<List<BlogTag>> ParseTagsAsync(string? tagString)
+        {
+            var tagNames = (tagString ?? "")
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim())
+                .Where(t => !string.IsNullOrEmpty(t))
+                .Distinct()
+                .Take(5)
+                .ToList();
+
+            var tags = new List<BlogTag>();
+            foreach (var name in tagNames)
+            {
+                var existing = _context.BlogTags.FirstOrDefault(t => t.Name == name);
+                tags.Add(existing ?? new BlogTag { Name = name });
+            }
+
+            return tags;
+        }
     }
 
     public class BlogInputModel
@@ -97,7 +131,6 @@ namespace StudyBuddy.Pages.BlogPages
         [MaxLength(10000, ErrorMessage = "Content cannot exceed 10,000 characters.")]
         public string Content { get; set; } = null!;
 
-        // Comma-separated tag names from the tag chip UI
         public string? Tags { get; set; }
     }
 }

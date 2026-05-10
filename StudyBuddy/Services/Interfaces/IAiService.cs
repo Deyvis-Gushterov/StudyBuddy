@@ -10,7 +10,6 @@
 
         Task<string> GetWritingSuggestionsAsync(string blogContent);
 
-
         Task<List<string>> SuggestTagsAsync(string blogContent);
     }
 }

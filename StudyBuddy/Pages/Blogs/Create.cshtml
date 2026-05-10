@@ -7,7 +7,7 @@
 <style>
     .create-layout {
         display: grid;
-        grid-template-columns: 1fr 300px;
+        grid-template-columns: 1fr 320px;
         gap: 2rem;
         align-items: flex-start;
     }
@@ -42,13 +42,7 @@
         margin-bottom: 0.75rem;
     }
 
-    .char-count {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        text-align: right;
-        margin-top: 3px;
-    }
-
+    .char-count { font-size: 0.75rem; color: var(--text-muted); text-align: right; margin-top: 3px; }
     .char-count.warning { color: #D97706; }
     .char-count.danger  { color: #DC2626; }
 
@@ -90,13 +84,7 @@
         border-radius: 20px;
     }
 
-    .tag-chip-remove {
-        cursor: pointer;
-        opacity: 0.7;
-        font-size: 0.85rem;
-        line-height: 1;
-    }
-
+    .tag-chip-remove { cursor: pointer; opacity: 0.7; font-size: 0.85rem; line-height: 1; }
     .tag-chip-remove:hover { opacity: 1; }
 
     .tag-real-input {
@@ -109,55 +97,155 @@
         flex: 1;
     }
 
-    .publish-toggle {
+    /* AI Sidebar Panel */
+    .ai-sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+    }
+
+    .ai-sidebar-header {
+        padding: 1rem 1.25rem;
+        background: linear-gradient(135deg, #1B2A4A 0%, #243659 100%);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.75rem;
-        background: var(--cream);
-        border-radius: 8px;
-        margin-bottom: 0.75rem;
     }
 
-    .publish-toggle label {
+    .ai-sidebar-header h4 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--white);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .ai-badge {
+        font-size: 0.65rem;
+        font-weight: 600;
+        background: var(--amber);
+        color: var(--navy);
+        padding: 2px 7px;
+        border-radius: 20px;
+    }
+
+    .ai-sidebar-body { padding: 1.25rem; }
+
+    .ai-action-btn {
+        width: 100%;
+        font-family: var(--font-body);
         font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--white);
+        background: var(--navy);
+        border: none;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.15s;
+        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .ai-action-btn:hover { background: var(--navy-light); }
+    .ai-action-btn.amber { background: var(--amber); color: var(--navy); }
+    .ai-action-btn.amber:hover { background: #b8790a; color: var(--white); }
+
+    .ai-result-box {
+        background: var(--cream);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 0.82rem;
+        line-height: 1.7;
+        color: var(--text-dark);
+        white-space: pre-wrap;
+        margin-top: 0.75rem;
+        max-height: 280px;
+        overflow-y: auto;
+    }
+
+    .ai-result-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .ai-suggested-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 0.5rem;
+    }
+
+    .ai-suggested-tag {
+        font-size: 0.75rem;
         font-weight: 500;
+        padding: 4px 10px;
+        background: var(--cream);
+        border: 1.5px solid var(--navy);
+        border-radius: 20px;
         color: var(--navy);
         cursor: pointer;
-        margin: 0;
+        transition: all 0.15s;
     }
 
-    .toggle-switch {
-        position: relative;
-        width: 40px;
-        height: 22px;
+    .ai-suggested-tag:hover {
+        background: var(--navy);
+        color: var(--white);
     }
 
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .ai-suggested-tag.added {
+        background: var(--navy);
+        color: var(--white);
+        cursor: default;
+    }
 
-    .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
+    .ai-divider {
+        height: 1px;
         background: var(--border);
-        border-radius: 22px;
-        transition: 0.2s;
+        margin: 0.75rem 0;
     }
 
-    .toggle-slider::before {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        left: 3px;
-        top: 3px;
-        background: white;
+    .ai-tip {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    .ai-loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        padding: 0.5rem 0;
+    }
+
+    .ai-spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--border);
+        border-top-color: var(--navy);
         border-radius: 50%;
-        transition: 0.2s;
+        animation: spin 0.7s linear infinite;
+        flex-shrink: 0;
     }
 
-    .toggle-switch input:checked + .toggle-slider { background: var(--navy); }
-    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+    @@keyframes spin { to { transform: rotate(360deg); } }
 
     @@media (max-width: 768px) {
         .create-layout { grid-template-columns: 1fr; }
@@ -174,6 +262,7 @@
 </div>
 
 <div class="create-layout">
+    <!-- Main Form -->
     <div class="create-form-card">
         <form method="post" id="blogForm">
 
@@ -207,7 +296,8 @@
 
             <div class="sb-form-group">
                 <label class="sb-label">Tags</label>
-                <div class="tag-input-wrap" id="tagWrap" onclick="document.getElementById('tagInput').focus()">
+                <div class="tag-input-wrap" id="tagWrap"
+                     onclick="document.getElementById('tagInput').focus()">
                     <input type="text" id="tagInput" class="tag-real-input"
                            placeholder="Type a tag and press Enter..." maxlength="30" />
                 </div>
@@ -220,7 +310,7 @@
             <div class="sb-form-group">
                 <label class="sb-label" asp-for="Input.Content">Content</label>
                 <textarea class="sb-input" asp-for="Input.Content"
-                          placeholder="Write your blog post here. Share your knowledge, insights, and ideas..."
+                          placeholder="Write your blog post here..."
                           id="contentInput" rows="16"></textarea>
                 <div class="char-count" id="contentCount">0 / 10000</div>
                 <span asp-validation-for="Input.Content" class="field-validation-error"></span>
@@ -240,6 +330,61 @@
 
     <!-- Sidebar -->
     <div class="create-sidebar">
+
+        <!-- AI Panel -->
+        <div class="ai-sidebar-card">
+            <div class="ai-sidebar-header">
+                <h4>🤖 AI Writing Assistant</h4>
+                <span class="ai-badge">Groq</span>
+            </div>
+            <div class="ai-sidebar-body">
+
+                <!-- Writing Suggestions -->
+                <form method="post" asp-page-handler="Suggest" id="suggestForm">
+                    <input type="hidden" name="contentSnapshot" id="contentSnapshot" />
+                    <button type="submit" class="ai-action-btn" id="suggestBtn"
+                            onclick="document.getElementById('contentSnapshot').value = document.getElementById('contentInput').value">
+                        ✍️ Get Writing Suggestions
+                    </button>
+                </form>
+
+                @if (Model.AiSuggestions != null)
+                {
+                    <div class="ai-result-label">✨ Suggestions</div>
+                    <div class="ai-result-box">@Model.AiSuggestions</div>
+                    <div class="ai-divider"></div>
+                }
+
+                <!-- Tag Suggestions -->
+                <form method="post" asp-page-handler="SuggestTags" id="tagsForm">
+                    <input type="hidden" name="contentSnapshot" id="contentSnapshotTags" />
+                    <button type="submit" class="ai-action-btn amber" id="tagsBtn"
+                            onclick="document.getElementById('contentSnapshotTags').value = document.getElementById('contentInput').value">
+                        🏷️ Auto-suggest Tags
+                    </button>
+                </form>
+
+                @if (Model.SuggestedTags != null && Model.SuggestedTags.Any())
+                {
+                    <div class="ai-result-label">🏷️ Suggested Tags — click to add</div>
+                    <div class="ai-suggested-tags" id="suggestedTagsContainer">
+                        @foreach (var tag in Model.SuggestedTags)
+                        {
+                            <span class="ai-suggested-tag" onclick="addSuggestedTag('@tag', this)">
+                                + @tag
+                            </span>
+                        }
+                    </div>
+                    <div class="ai-divider"></div>
+                }
+
+                <p class="ai-tip">
+                    Write at least a few sentences first, then use the AI to get suggestions and tags.
+                </p>
+            </div>
+        </div>
+
+        <!-- Tips -->
         <div class="sidebar-card">
             <h4>✍️ Writing Tips</h4>
             <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0 0 0.5rem;">
@@ -253,20 +398,14 @@
             </p>
         </div>
 
+        <!-- Publish Options -->
         <div class="sidebar-card">
             <h4>📋 Publish Options</h4>
             <p style="font-size:0.82rem; color:var(--text-muted); margin:0 0 0.75rem; line-height:1.6;">
-                <strong>Save as Draft</strong> — only visible to you. Edit anytime before publishing.
+                <strong>Save as Draft</strong> — only visible to you.
             </p>
             <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.6;">
-                <strong>Publish</strong> — visible to all StudyBuddy users immediately.
-            </p>
-        </div>
-
-        <div class="sidebar-card" style="background:var(--cream);">
-            <h4>🤖 AI Writing Assistant</h4>
-            <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.6;">
-                AI-powered writing suggestions and auto-tagging coming soon!
+                <strong>Publish</strong> — visible to all users immediately.
             </p>
         </div>
     </div>
@@ -294,7 +433,15 @@
         updateCount('contentInput', 'contentCount', 10000);
 
         // Tag system
-        const tags = [];
+        const tags = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(
+                (Model.Input.Tags ?? "")
+                .Split(',', System.StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim())
+                .Where(t => !string.IsNullOrEmpty(t))
+                .ToList()
+            )
+        );
         const tagInput   = document.getElementById('tagInput');
         const tagWrap    = document.getElementById('tagWrap');
         const tagsHidden = document.getElementById('tagsHidden');
@@ -316,9 +463,7 @@
                 e.preventDefault();
                 const val = tagInput.value.trim().replace(/,/g, '');
                 if (val && tags.length < 5 && !tags.includes(val)) {
-                    tags.push(val);
-                    tagInput.value = '';
-                    renderTags();
+                    tags.push(val); tagInput.value = ''; renderTags();
                 }
             }
             if (e.key === 'Backspace' && !tagInput.value && tags.length) {
@@ -328,9 +473,33 @@
 
         tagWrap.addEventListener('click', e => {
             if (e.target.classList.contains('tag-chip-remove')) {
-                tags.splice(+e.target.dataset.i, 1);
-                renderTags();
+                tags.splice(+e.target.dataset.i, 1); renderTags();
             }
         });
+
+        // Add AI suggested tag
+        function addSuggestedTag(tag, el) {
+            if (el.classList.contains('added')) return;
+            const clean = tag.trim();
+            if (clean && tags.length < 5 && !tags.includes(clean)) {
+                tags.push(clean);
+                renderTags();
+                el.classList.add('added');
+                el.textContent = '✓ ' + clean;
+            }
+        }
+
+        // Loading states
+        document.getElementById('suggestForm')?.addEventListener('submit', () => {
+            const btn = document.getElementById('suggestBtn');
+            if (btn) { btn.textContent = '⏳ Thinking...'; btn.disabled = true; }
+        });
+
+        document.getElementById('tagsForm')?.addEventListener('submit', () => {
+            const btn = document.getElementById('tagsBtn');
+            if (btn) { btn.textContent = '⏳ Generating...'; btn.disabled = true; }
+        });
+
+        renderTags();
     </script>
 }

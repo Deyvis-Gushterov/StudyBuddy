@@ -94,9 +94,6 @@
     .note-meta-stat {
         font-size: 0.82rem;
         color: var(--text-muted);
-        display: flex;
-        align-items: center;
-        gap: 4px;
     }
 
     .note-brief {
@@ -140,6 +137,7 @@
         padding: 1.25rem 2rem;
         border-top: 1px solid var(--border);
         background: var(--cream);
+        flex-wrap: wrap;
     }
 
     .action-btn {
@@ -159,48 +157,18 @@
         text-decoration: none;
     }
 
-    .action-btn:hover {
-        border-color: var(--navy);
-        color: var(--navy);
-        text-decoration: none;
-    }
-
-    .action-btn.liked {
-        border-color: #EF4444;
-        color: #EF4444;
-        background: #FEE2E2;
-    }
-
-    .action-btn.saved {
-        border-color: var(--amber);
-        color: var(--amber);
-        background: #FEF3C7;
-    }
-
-    .action-btn svg {
-        width: 15px;
-        height: 15px;
-        stroke: currentColor;
-        fill: none;
-    }
-
-    .action-btn-danger {
-        border-color: #FCA5A5;
-        color: #EF4444;
-        margin-left: auto;
-    }
-
-    .action-btn-danger:hover {
-        border-color: #EF4444;
-        background: #FEE2E2;
-        color: #EF4444;
-    }
+    .action-btn:hover { border-color: var(--navy); color: var(--navy); text-decoration: none; }
+    .action-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+    .action-btn-danger { border-color: #FCA5A5; color: #EF4444; margin-left: auto; }
+    .action-btn-danger:hover { border-color: #EF4444; background: #FEE2E2; color: #EF4444; }
 
     /* Sidebar */
     .details-sidebar {
         display: flex;
         flex-direction: column;
         gap: 1.25rem;
+        position: sticky;
+        top: 80px;
     }
 
     .sidebar-card {
@@ -215,7 +183,7 @@
         font-weight: 600;
         color: var(--navy);
         margin-bottom: 1rem;
-        padding-bottom: 0.75rem;
+        padding-bottom: 0.6rem;
         border-bottom: 1px solid var(--border);
     }
 
@@ -238,21 +206,194 @@
         font-size: 18px;
         font-weight: 700;
         color: var(--amber);
-        margin-bottom: 0.25rem;
     }
 
-    .author-name {
+    .author-name { font-weight: 600; color: var(--navy); font-size: 0.95rem; }
+    .author-nationality { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* ── AI Section ── */
+    .ai-section {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        margin-top: 1.5rem;
+    }
+
+    .ai-section-header {
+        padding: 1.25rem 1.75rem;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(135deg, #1B2A4A 0%, #243659 100%);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .ai-section-header h3 {
+        font-size: 1rem;
         font-weight: 600;
+        color: var(--white);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ai-badge {
+        font-size: 0.68rem;
+        font-weight: 600;
+        background: var(--amber);
         color: var(--navy);
-        font-size: 0.95rem;
+        padding: 2px 8px;
+        border-radius: 20px;
     }
 
-    .author-nationality {
-        font-size: 0.8rem;
+    .ai-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .ai-tab-btn {
+        flex: 1;
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        font-weight: 500;
         color: var(--text-muted);
+        background: var(--cream);
+        border: none;
+        padding: 0.75rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
     }
 
-    /* Comments placeholder */
+    .ai-tab-btn:hover { color: var(--navy); background: var(--white); }
+    .ai-tab-btn.active { color: var(--navy); background: var(--white); border-bottom-color: var(--navy); font-weight: 600; }
+
+    .ai-tab-panel { display: none; padding: 1.5rem 1.75rem; }
+    .ai-tab-panel.active { display: block; }
+
+    /* Chat */
+    .ai-chat-messages {
+        min-height: 80px;
+        max-height: 320px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .ai-message {
+        padding: 0.85rem 1rem;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        line-height: 1.65;
+        white-space: pre-wrap;
+    }
+
+    .ai-message-user {
+        background: var(--navy);
+        color: var(--white);
+        align-self: flex-end;
+        max-width: 85%;
+        border-radius: 10px 10px 2px 10px;
+    }
+
+    .ai-message-ai {
+        background: var(--cream);
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        align-self: flex-start;
+        max-width: 95%;
+        border-radius: 10px 10px 10px 2px;
+    }
+
+    .ai-message-ai-header {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--amber);
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .ai-input-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-end;
+    }
+
+    .ai-input-row textarea {
+        flex: 1;
+        min-height: 44px;
+        max-height: 100px;
+        resize: none;
+    }
+
+    .ai-submit-btn {
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--white);
+        background: var(--navy);
+        border: none;
+        padding: 0.6rem 1.1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.15s;
+        white-space: nowrap;
+        align-self: flex-end;
+    }
+
+    .ai-submit-btn:hover { background: var(--navy-light); }
+
+    /* Summary */
+    .ai-summary-box {
+        background: var(--cream);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.1rem 1.25rem;
+        font-size: 0.9rem;
+        line-height: 1.75;
+        color: var(--text-dark);
+        white-space: pre-wrap;
+        margin-bottom: 1rem;
+    }
+
+    .ai-empty {
+        text-align: center;
+        padding: 1.5rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    .ai-empty-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+
+    /* Loading spinner */
+    .ai-loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        padding: 0.75rem 0;
+    }
+
+    .ai-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border);
+        border-top-color: var(--navy);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+    }
+
+    @@keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Comments */
     .comments-section {
         background: var(--white);
         border: 1px solid var(--border);
@@ -310,6 +451,7 @@
         .note-content-header { padding: 1.5rem; }
         .note-content-body { padding: 1.5rem; }
         .note-actions-bar { padding: 1rem 1.5rem; flex-wrap: wrap; }
+        .details-sidebar { position: static; }
     }
 </style>
 
@@ -319,7 +461,6 @@
     return;
 }
 
-<!-- Back -->
 <div style="margin-bottom: 1.5rem;">
     <a class="btn-sb-ghost" asp-page="/Notes/Index">← Back to Notes</a>
 </div>
@@ -342,9 +483,7 @@
                         </div>
                     </div>
                     <div class="note-meta-divider"></div>
-                    <span class="note-meta-stat">
-                        ❤️ @Model.Note.Likes likes
-                    </span>
+                    <span class="note-meta-stat">❤️ @Model.Note.Likes likes</span>
                 </div>
             </div>
 
@@ -357,7 +496,6 @@
                 <p>@Model.Note.Content</p>
             </div>
 
-            <!-- Action Bar -->
             <div class="note-actions-bar">
                 <form method="post" asp-page-handler="Like">
                     <input type="hidden" name="id" value="@Model.Note.Id" />
@@ -381,7 +519,8 @@
                         <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Edit
                     </a>
-                    <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Are you sure you want to delete this note?')">
+                    <form method="post" asp-page-handler="Delete"
+                          onsubmit="return confirm('Are you sure you want to delete this note?')">
                         <input type="hidden" name="id" value="@Model.Note.Id" />
                         <button type="submit" class="action-btn action-btn-danger">
                             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
@@ -389,6 +528,79 @@
                         </button>
                     </form>
                 }
+            </div>
+        </div>
+
+        <!-- AI Section -->
+        <div class="ai-section">
+            <div class="ai-section-header">
+                <h3>🤖 AI Study Assistant</h3>
+                <span class="ai-badge">Powered by Gemini</span>
+            </div>
+
+            <div class="ai-tabs">
+                <button class="ai-tab-btn active" onclick="switchAiTab('chat', this)">
+                    💬 Ask a Question
+                </button>
+                <button class="ai-tab-btn" onclick="switchAiTab('summary', this)">
+                    📋 Summarize Note
+                </button>
+            </div>
+
+            <!-- Chat Tab -->
+            <div class="ai-tab-panel active" id="ai-tab-chat">
+                <div class="ai-chat-messages" id="chatMessages">
+                    @if (Model.AiAnswer != null)
+                    {
+                        <div class="ai-message ai-message-user">@Model.UserQuestion</div>
+                        <div class="ai-message ai-message-ai">
+                            <div class="ai-message-ai-header">🤖 Gemini</div>
+                            @Model.AiAnswer
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ai-empty">
+                            <div class="ai-empty-icon">🤖</div>
+                            Ask me anything about this note — I'll help you understand it better!
+                        </div>
+                    }
+                </div>
+
+                <form method="post" asp-page-handler="Ask" id="askForm">
+                    <input type="hidden" name="id" value="@Model.Note.Id" />
+                    <div class="ai-input-row">
+                        <textarea class="sb-input" asp-for="UserQuestion"
+                                  placeholder="e.g. Can you explain the main concept? What are the key points?"
+                                  rows="2" id="questionInput"></textarea>
+                        <button type="submit" class="ai-submit-btn" id="askBtn">
+                            Ask →
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Summary Tab -->
+            <div class="ai-tab-panel" id="ai-tab-summary">
+                @if (Model.AiSummary != null)
+                {
+                    <div class="ai-message-ai-header" style="margin-bottom:0.75rem;">🤖 Gemini Summary</div>
+                    <div class="ai-summary-box">@Model.AiSummary</div>
+                }
+                else
+                {
+                    <div class="ai-empty">
+                        <div class="ai-empty-icon">📋</div>
+                        Click below to generate an AI summary of this note.
+                    </div>
+                }
+
+                <form method="post" asp-page-handler="Summarize">
+                    <input type="hidden" name="id" value="@Model.Note.Id" />
+                    <button type="submit" class="ai-submit-btn" style="width:100%;">
+                        ✨ Generate Summary
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -406,9 +618,7 @@
                     </div>
                 </div>
             </div>
-            <div class="empty-comments">
-                No comments yet. Be the first to start the discussion!
-            </div>
+            <div class="empty-comments">No comments yet. Be the first to start the discussion!</div>
         </div>
     </div>
 
@@ -442,12 +652,31 @@
                 </div>
             </div>
         </div>
-
-        <div class="sidebar-card" style="background:var(--cream);">
-            <h4>🤖 AI Study Assistant</h4>
-            <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">
-                Ask questions about this note, get a summary, or quiz yourself — coming soon!
-            </p>
-        </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    function switchAiTab(name, btn) {
+        document.querySelectorAll('.ai-tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.ai-tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('ai-tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // Show loading state when submitting AI forms
+    document.getElementById('askForm')?.addEventListener('submit', () => {
+        const btn = document.getElementById('askBtn');
+        if (btn) {
+            btn.textContent = '⏳ Thinking...';
+            btn.disabled = true;
+        }
+    });
+
+    // Auto switch to correct tab if AI response is present
+    @if (Model.AiSummary != null)
+    {
+        <text>switchAiTab('summary', document.querySelectorAll('.ai-tab-btn')[1]);</text>
+    }
+</script>
+}

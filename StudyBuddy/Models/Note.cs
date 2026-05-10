@@ -19,7 +19,6 @@ namespace StudyBuddy.Models
 
         [Required]
         [MinLength(ValidationConstants.MinExplanationLength)]
-        [MaxLength(ValidationConstants.MaxExplanationLength)]
         public string Content { get; set; } = null!;
         [Required]
         public string Subject { get; set; } = null!;

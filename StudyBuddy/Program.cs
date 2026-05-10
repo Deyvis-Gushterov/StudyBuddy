@@ -19,6 +19,8 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
+builder.Services.AddHttpClient<IAiService, AiService>();
+builder.Services.AddScoped<IAiService, AiService>();
 
 builder.Services.AddRazorPages();
 

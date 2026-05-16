@@ -438,8 +438,7 @@ namespace StudyBuddy.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatorId")
                         .IsRequired()

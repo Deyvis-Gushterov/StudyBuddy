@@ -1,0 +1,244 @@
+﻿@page
+@model StudyBuddy.Pages.FeedbackPages.CreateModel
+@{
+    ViewData["Title"] = "Send Feedback";
+}
+
+<style>
+    .feedback-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        align-items: flex-start;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .feedback-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .feedback-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+    }
+
+        .sidebar-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.75rem;
+        }
+
+    /* Star Rating */
+    .star-rating {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .star-btn {
+        font-size: 1.75rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--border);
+        transition: color 0.15s, transform 0.1s;
+        line-height: 1;
+    }
+
+        .star-btn:hover,
+        .star-btn.active {
+            color: var(--amber);
+        }
+
+        .star-btn:hover {
+            transform: scale(1.15);
+        }
+
+    .star-label {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .char-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: right;
+        margin-top: 3px;
+    }
+
+        .char-count.warning {
+            color: #D97706;
+        }
+
+        .char-count.danger {
+            color: #DC2626;
+        }
+
+    @@media (max-width: 768px) {
+        .feedback-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="sb-page-header" style="max-width:900px; margin:0 auto 2rem;">
+    <div>
+        <h1>Send Feedback</h1>
+        <p>Help us improve StudyBuddy — your feedback goes directly to the team</p>
+    </div>
+</div>
+
+@if (Model.Success)
+{
+    <div class="sb-alert sb-alert-success" style="max-width:900px; margin:0 auto 1.5rem;">
+        ✅ Thank you for your feedback! We really appreciate it.
+    </div>
+}
+
+<div class="feedback-layout">
+    <div class="feedback-card">
+        <form method="post">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="sb-alert sb-alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="margin:0;">@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <!-- Star Rating -->
+            <div class="sb-form-group">
+                <label class="sb-label">Overall Rating (optional)</label>
+                <div class="star-rating" id="starRating">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <button type="button" class="star-btn" data-value="@i" onclick="setRating(@i)">★</button>
+                    }
+                </div>
+                <div class="star-label" id="starLabel">Click to rate</div>
+                <input type="hidden" asp-for="Input.Rating" id="ratingInput" />
+            </div>
+
+            <!-- Message -->
+            <div class="sb-form-group">
+                <label class="sb-label" asp-for="Input.Message">Your Feedback</label>
+                <textarea class="sb-input" asp-for="Input.Message"
+                          placeholder="Tell us what you think — what works well, what could be better, or any features you'd like to see..."
+                          rows="6" id="messageInput" maxlength="500"></textarea>
+                <div class="char-count" id="messageCount">0 / 500</div>
+                <span asp-validation-for="Input.Message" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-actions">
+                <a class="btn-sb-ghost" asp-page="/Index">Cancel</a>
+                <button type="submit" class="btn-sb-primary">Send Feedback →</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="feedback-sidebar">
+        <div class="sidebar-card">
+            <h4>💡 What to include</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0 0 0.5rem;">
+                <strong>Bugs</strong> — describe what happened and what you expected.
+            </p>
+            <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0 0 0.5rem;">
+                <strong>Feature requests</strong> — tell us what would make your study experience better.
+            </p>
+            <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.6; margin:0;">
+                <strong>General thoughts</strong> — anything you love or want to see changed.
+            </p>
+        </div>
+
+        <div class="sidebar-card" style="background:var(--cream);">
+            <h4>🔒 Anonymous?</h4>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin:0; line-height:1.6;">
+                Your feedback is linked to your account so we can follow up if needed, but it's only visible to admins.
+            </p>
+        </div>
+
+        <div class="sidebar-card">
+            <h4>⭐ Rating Guide</h4>
+            <div style="display:flex; flex-direction:column; gap:0.4rem;">
+                <div style="font-size:0.8rem; color:var(--text-muted);">⭐ — Very disappointed</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">⭐⭐ — Not satisfied</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">⭐⭐⭐ — It's okay</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">⭐⭐⭐⭐ — Pretty good</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">⭐⭐⭐⭐⭐ — Love it!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Char counter
+        const msgInput = document.getElementById('messageInput');
+        const msgCount = document.getElementById('messageCount');
+        msgInput?.addEventListener('input', () => {
+            const len = msgInput.value.length;
+            msgCount.textContent = `${len} / 500`;
+            msgCount.className = 'char-count';
+            if (len > 450) msgCount.classList.add('warning');
+            if (len >= 500) msgCount.classList.add('danger');
+        });
+
+        // Star rating
+        const labels = ['', 'Very disappointed', 'Not satisfied', "It's okay", 'Pretty good', 'Love it!'];
+        let currentRating = 0;
+
+        function setRating(value) {
+            currentRating = value;
+            document.getElementById('ratingInput').value = value;
+            document.getElementById('starLabel').textContent = labels[value];
+            document.querySelectorAll('.star-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i < value);
+            });
+        }
+
+        // Hover effect
+        document.querySelectorAll('.star-btn').forEach((btn, i) => {
+            btn.addEventListener('mouseenter', () => {
+                document.querySelectorAll('.star-btn').forEach((b, j) => {
+                    b.style.color = j <= i ? 'var(--amber)' : '';
+                });
+            });
+            btn.addEventListener('mouseleave', () => {
+                document.querySelectorAll('.star-btn').forEach((b, j) => {
+                    b.style.color = '';
+                    b.classList.toggle('active', j < currentRating);
+                });
+            });
+        });
+    </script>
+}

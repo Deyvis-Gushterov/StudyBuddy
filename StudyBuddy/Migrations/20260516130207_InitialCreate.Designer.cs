@@ -12,7 +12,7 @@ using StudyBuddy.Data;
 namespace StudyBuddy.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260509164418_InitialCreate")]
+    [Migration("20260516130207_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -441,8 +441,7 @@ namespace StudyBuddy.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatorId")
                         .IsRequired()

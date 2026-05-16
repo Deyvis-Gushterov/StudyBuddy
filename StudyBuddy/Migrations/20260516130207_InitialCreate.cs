@@ -237,7 +237,7 @@ namespace StudyBuddy.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Topic = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     BriefExplanation = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Subject = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<string>(type: "nvarchar(450)", nullable: false),

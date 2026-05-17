@@ -1,20 +1,18 @@
 ﻿@page
-@model StudyBuddy.Pages.ErrorModel
+@model StudyBuddy.Pages.NotFoundModel
 @{
-    ViewData["Title"] = "Something went wrong";
+    ViewData["Title"] = "Page Not Found";
 }
 
 <style>
-    .error-wrapper {
-        position: relative;
+    .error-page {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 60vh;
-        overflow: hidden;
         text-align: center;
         padding: 5rem 2rem;
+        min-height: 60vh;
     }
 
     .error-code {
@@ -23,6 +21,7 @@
         font-weight: 700;
         color: var(--navy);
         line-height: 1;
+        margin-bottom: 0.5rem;
         opacity: 0.1;
         position: absolute;
         left: 50%;
@@ -65,38 +64,29 @@
         flex-wrap: wrap;
     }
 
-    .error-details {
-        margin-top: 2rem;
-        background: var(--white);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 1rem 1.5rem;
-        font-size: 0.82rem;
-        color: var(--text-muted);
-        max-width: 500px;
-        text-align: left;
+    .error-wrapper {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        overflow: hidden;
     }
 </style>
 
 <div class="error-wrapper">
-    <div class="error-code">500</div>
+    <div class="error-code">404</div>
     <div class="error-content">
-        <span class="error-icon">⚠️</span>
-        <h1 class="error-title">Something went wrong</h1>
+        <span class="error-icon">🔍</span>
+        <h1 class="error-title">Page not found</h1>
         <p class="error-message">
-            An unexpected error occurred. Don't worry — it's not your fault.
-            Try refreshing the page or going back home.
+            The page you're looking for doesn't exist or may have been moved.
+            It might have been lost between the shelves!
         </p>
         <div class="error-actions">
             <a class="btn-sb-primary" asp-page="/Index">Go Home</a>
-            <a class="btn-sb-ghost" href="javascript:history.back()">Go Back</a>
+            <a class="btn-sb-ghost" asp-page="/Notes/Index">Browse Notes</a>
         </div>
-
-        @if (Model.RequestId != null)
-        {
-            <div class="error-details">
-                <strong>Request ID:</strong> @Model.RequestId
-            </div>
-        }
     </div>
 </div>

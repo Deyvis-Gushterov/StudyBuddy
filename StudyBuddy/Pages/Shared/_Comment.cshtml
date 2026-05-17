@@ -1,0 +1,13 @@
+﻿@model StudyBuddy.Models.Comment
+
+<div class="comment-item" id="comment-@Model.Id">
+    <div class="comment-avatar">
+        @(Model.Author?.FirstName?.Substring(0, 1).ToUpper())@(Model.Author?.LastName?.Substring(0, 1).ToUpper())
+    </div>
+    <div class="comment-content">
+        <div class="comment-author-name">
+            @Model.Author?.FirstName @Model.Author?.LastName
+        </div>
+        <p class="comment-text">@Model.Content</p>
+    </div>
+</div>

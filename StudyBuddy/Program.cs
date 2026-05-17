@@ -21,6 +21,7 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 builder.Services.AddHttpClient<IAiService, AiService>();
 builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddRazorPages();
 
@@ -43,6 +44,13 @@ using (var scope = app.Services.CreateScope())
 }
 
 
+app.UseStatusCodePagesWithReExecute("/NotFound");
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -52,6 +60,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseRouting();
@@ -59,6 +68,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.MapStaticAssets();
 app.MapRazorPages()

@@ -36,9 +36,8 @@ namespace StudyBuddy.Pages.BlogPages
             CurrentUserId = currentUser?.Id;
             IsOwner = currentUser?.Id == Blog.AuthorId;
 
-            // Increment view count
-            Blog.Views++;
-            await _blogService.UpdateBlogAsync(id, Blog);
+            // Clean increment
+            await _blogService.IncrementViewAsync(id);
 
             return Page();
         }

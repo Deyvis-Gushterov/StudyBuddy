@@ -15,6 +15,18 @@ namespace StudyBuddy.Services.Implementations
             this.context = context;
         }
 
+        public async Task<bool> IncrementViewAsync(int id)
+        {
+            var blog = await context.Blogs
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (blog == null) return false;
+
+            blog.Views++;
+            await context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<Blog?> GetBlogByIdAsync(int id)
         {
             var blog = await context.Blogs

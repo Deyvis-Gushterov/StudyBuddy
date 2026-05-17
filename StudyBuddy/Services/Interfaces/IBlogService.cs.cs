@@ -14,5 +14,6 @@ namespace StudyBuddy.Services.Interfaces
         Task<bool> UnpublishBlogAsync(int id);
         Task<bool> LikeBlogAsync(int id);
 
+        Task<bool> IncrementViewAsync(int id);
     }
 }

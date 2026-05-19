@@ -1,0 +1,606 @@
+﻿@page
+@model StudyBuddy.Pages.Feed.IndexModel
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Feed";
+    var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var currentUserInitial = User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U";
+}
+
+<style>
+    .feed-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        align-items: flex-start;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* ── Composer ── */
+    .composer-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 1.5rem;
+        animation: fadeInUp 0.35s ease both;
+    }
+
+    .composer-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .composer-avatar {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--amber);
+    }
+
+    .composer-wrap {
+        flex: 1;
+    }
+
+    .composer-textarea {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-family: var(--font-body);
+        font-size: 0.925rem;
+        color: var(--text-dark);
+        background: var(--cream);
+        resize: none;
+        outline: none;
+        min-height: 80px;
+        transition: border-color 0.15s, background 0.15s;
+        line-height: 1.6;
+    }
+
+        .composer-textarea:focus {
+            border-color: var(--navy);
+            background: var(--white);
+        }
+
+        .composer-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+    .composer-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+    }
+
+    .composer-char {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+        .composer-char.warning {
+            color: #D97706;
+        }
+
+        .composer-char.danger {
+            color: #DC2626;
+        }
+
+    /* ── Feed items ── */
+    .feed-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .post-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: var(--card-shadow);
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+        animation: fadeInUp 0.4s ease both;
+    }
+
+        .post-card:hover {
+            box-shadow: 0 6px 24px rgba(27,42,74,0.1);
+            transform: translateY(-1px);
+        }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.875rem;
+    }
+
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
+        transition: opacity 0.15s;
+    }
+
+        .post-author:hover {
+            opacity: 0.75;
+        }
+
+    .post-avatar {
+        width: 36px;
+        height: 36px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--amber);
+        flex-shrink: 0;
+    }
+
+    .post-author-info strong {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--navy);
+        display: block;
+    }
+
+    .post-author-info span {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .post-content {
+        font-size: 0.95rem;
+        line-height: 1.75;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        white-space: pre-wrap;
+    }
+
+    .post-footer {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .post-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: var(--font-body);
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.35rem 0.85rem;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--white);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        text-decoration: none;
+    }
+
+        .post-action-btn:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(27,42,74,0.1);
+        }
+
+        .post-action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .post-action-btn.like-btn:hover {
+            border-color: #FCA5A5;
+            color: #EF4444;
+            background: #FEF2F2;
+        }
+
+        .post-action-btn.delete-btn {
+            margin-left: auto;
+            border-color: transparent;
+            color: var(--text-muted);
+        }
+
+            .post-action-btn.delete-btn:hover {
+                border-color: #FCA5A5;
+                color: #EF4444;
+                background: #FEF2F2;
+                box-shadow: none;
+            }
+
+    /* ── Empty feed ── */
+    .feed-empty {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: var(--card-shadow);
+    }
+
+    .feed-empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .feed-empty h3 {
+        font-size: 1.1rem;
+        color: var(--navy);
+        margin-bottom: 0.5rem;
+    }
+
+    .feed-empty p {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* ── Sidebar ── */
+    .feed-sidebar {
+        position: sticky;
+        top: 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .sidebar-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: var(--card-shadow);
+        animation: slideInRight 0.4s ease both;
+    }
+
+        .sidebar-card h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+    /* Suggested users */
+    .suggested-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .suggested-user:last-child {
+            border-bottom: none;
+        }
+
+    .suggested-avatar {
+        width: 34px;
+        height: 34px;
+        background: var(--navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--amber);
+        flex-shrink: 0;
+        text-decoration: none;
+    }
+
+    .suggested-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .suggested-info a {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--navy);
+            text-decoration: none;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+            .suggested-info a:hover {
+                color: var(--amber);
+            }
+
+        .suggested-info span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+    .follow-btn {
+        font-family: var(--font-body);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--navy);
+        background: var(--cream);
+        border: 1.5px solid var(--border);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        white-space: nowrap;
+    }
+
+        .follow-btn:hover {
+            background: var(--navy);
+            color: var(--white);
+            border-color: var(--navy);
+            transform: scale(1.05);
+        }
+
+    /* ── Animations ── */
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .post-card:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+
+    .post-card:nth-child(2) {
+        animation-delay: 0.10s;
+    }
+
+    .post-card:nth-child(3) {
+        animation-delay: 0.15s;
+    }
+
+    .post-card:nth-child(4) {
+        animation-delay: 0.20s;
+    }
+
+    .post-card:nth-child(5) {
+        animation-delay: 0.25s;
+    }
+
+    .sidebar-card:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .sidebar-card:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    @@media (max-width: 768px) {
+        .feed-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .feed-sidebar {
+            position: static;
+        }
+    }
+</style>
+
+<div class="feed-layout">
+
+    <!-- ── Main Feed ── -->
+    <div>
+
+        <!-- Composer -->
+        <div class="composer-card">
+            <form method="post" asp-page-handler="Create" id="composerForm">
+                <div class="composer-row">
+                    <div class="composer-avatar">@currentUserInitial</div>
+                    <div class="composer-wrap">
+                        <textarea class="composer-textarea"
+                                  name="content"
+                                  id="composerInput"
+                                  placeholder="What's on your mind? Share a study tip, ask a question, or just say hi 👋"
+                                  maxlength="300"
+                                  required></textarea>
+                        <div class="composer-footer">
+                            <span class="composer-char" id="composerCount">0 / 300</span>
+                            <button type="submit" class="btn-sb-primary"
+                                    style="font-size:0.85rem; padding:0.4rem 1.25rem;">
+                                Post
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Feed Posts -->
+        <div class="feed-list">
+            @if (!Model.Posts.Any())
+            {
+                <div class="feed-empty">
+                    <div class="feed-empty-icon">🌱</div>
+                    <h3>Your feed is empty</h3>
+                    <p>Follow some students to see their posts here, or be the first to post something!</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var post in Model.Posts)
+                {
+                    var initials = $"{post.Author?.FirstName?.Substring(0, 1)}{post.Author?.LastName?.Substring(0, 1)}".ToUpper();
+                    var timeAgo = GetTimeAgo(post.CreatedAt);
+                    var isOwner = post.AuthorId == currentUserId;
+
+                    <div class="post-card">
+                        <div class="post-header">
+                            <a class="post-author"
+                               asp-page="/Profile/Index"
+                               asp-route-userId="@post.AuthorId">
+                                <div class="post-avatar">@initials</div>
+                                <div class="post-author-info">
+                                    <strong>@post.Author?.FirstName @post.Author?.LastName</strong>
+                                    <span>@timeAgo</span>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="post-content">@post.Content</div>
+
+                        <div class="post-footer">
+                            <!-- Like -->
+                            <form method="post" asp-page-handler="Like">
+                                <input type="hidden" name="id" value="@post.Id" />
+                                <input type="hidden" name="targetId" value="@post.AuthorId" />
+                                <input type="hidden" name="doerId" value="@currentUserId" />
+                                <button type="submit" class="post-action-btn like-btn">
+                                    ❤️ @post.Likes
+                                </button>
+                            </form>
+
+                            @if (isOwner || User.IsInRole("Admin"))
+                            {
+                                <form method="post" asp-page-handler="Delete"
+                                      onsubmit="return confirm('Delete this post?')">
+                                    <input type="hidden" name="id" value="@post.Id" />
+                                    <button type="submit" class="post-action-btn delete-btn"
+                                            title="Delete post">
+                                        🗑️
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- ── Sidebar ── -->
+    <div class="feed-sidebar">
+
+        <!-- Suggested Students -->
+        <div class="sidebar-card">
+            <h4>👥 Suggested Students</h4>
+            @if (!Model.SuggestedUsers.Any())
+            {
+                <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">
+                    You're following everyone! 🎉
+                </p>
+            }
+            else
+            {
+                @foreach (var u in Model.SuggestedUsers)
+                {
+                    var initials = $"{u.FirstName?.Substring(0, 1)}{u.LastName?.Substring(0, 1)}".ToUpper();
+                    <div class="suggested-user">
+                        <a class="suggested-avatar"
+                           asp-page="/Profile/Index"
+                           asp-route-userId="@u.Id">@initials</a>
+                        <div class="suggested-info">
+                            <a asp-page="/Profile/Index" asp-route-userId="@u.Id">
+                                @u.FirstName @u.LastName
+                            </a>
+                            <span>@u.Nationality</span>
+                        </div>
+                        <form method="post" asp-page="/Profile/Index" asp-page-handler="Follow"
+                              asp-route-userId="@u.Id">
+                            <input type="hidden" name="targetId" value="@u.Id" />
+                            <button type="submit" class="follow-btn">Follow</button>
+                        </form>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Quick Links -->
+        <div class="sidebar-card">
+            <h4>🔗 Quick Links</h4>
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                <a asp-page="/Notes/Create" class="post-action-btn" style="justify-content:center;">
+                    📝 Write a Note
+                </a>
+                <a asp-page="/Blogs/Create" class="post-action-btn" style="justify-content:center;">
+                    ✍️ Write a Blog
+                </a>
+                <a asp-page="/Notes/Index" class="post-action-btn" style="justify-content:center;">
+                    📚 Browse Notes
+                </a>
+                <a asp-page="/Blogs/Index" class="post-action-btn" style="justify-content:center;">
+                    🌐 Browse Blogs
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetTimeAgo(DateTime utcTime)
+    {
+        var diff = DateTime.UtcNow - utcTime;
+        if (diff.TotalSeconds < 60) return "Just now";
+        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
+        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h ago";
+        if (diff.TotalDays < 7) return $"{(int)diff.TotalDays}d ago";
+        return utcTime.ToLocalTime().ToString("MMM d");
+    }
+}
+
+@section Scripts {
+    <script>
+        // Composer char counter
+        const input = document.getElementById('composerInput');
+        const count = document.getElementById('composerCount');
+        if (input && count) {
+            input.addEventListener('input', () => {
+                const len = input.value.length;
+                count.textContent = `${len} / 300`;
+                count.className = 'composer-char';
+                if (len > 240) count.classList.add('warning');
+                if (len >= 290) count.classList.add('danger');
+            });
+        }
+
+        // Auto-resize textarea
+        input?.addEventListener('input', () => {
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 200) + 'px';
+        });
+    </script>
+}

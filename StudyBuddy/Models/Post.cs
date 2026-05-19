@@ -18,6 +18,8 @@ namespace StudyBuddy.Models
 
         public int Likes {  get; set; }
 
+        public string? ImageUrl { get; set; }
+
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

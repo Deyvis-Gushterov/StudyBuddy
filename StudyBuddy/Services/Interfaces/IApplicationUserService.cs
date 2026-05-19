@@ -17,6 +17,7 @@ namespace StudyBuddy.Services.Interfaces
         // Followers
         Task<bool> FollowUserAsync(string followerId, string targetId);
         Task<bool> UnfollowUserAsync(string followerId, string targetId);
+        Task<List<ApplicationUser>> GetFollowingAsync(string userId);
         Task<List<ApplicationUser>> GetFollowersAsync(string userId);
 
         // Saved Notes

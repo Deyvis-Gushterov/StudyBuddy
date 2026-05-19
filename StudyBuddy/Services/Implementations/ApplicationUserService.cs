@@ -300,5 +300,12 @@ namespace StudyBuddy.Services.Implementations
 
             return user.SavedBlogs.ToList();
         }
+
+        public async Task<List<ApplicationUser>> GetFollowingAsync(string userId)
+        {
+            return await context.Users
+                .Where(u => u.Followers.Any(f => f.Id == userId))
+                .ToListAsync();
+        }
     }
 }

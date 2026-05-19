@@ -1,8 +1,452 @@
-﻿@page
+﻿
+@page
 @model PrivacyModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Privacy & Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<style>
+    .privacy-wrapper {
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 5rem;
+    }
+
+    .privacy-bg-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(70px);
+        opacity: 0.16;
+        z-index: 0;
+        animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    .privacy-bg-orb.one {
+        width: 320px;
+        height: 320px;
+        background: var(--amber);
+        top: -120px;
+        right: -100px;
+    }
+
+    .privacy-bg-orb.two {
+        width: 280px;
+        height: 280px;
+        background: var(--navy);
+        bottom: -100px;
+        left: -80px;
+        animation-delay: 2s;
+    }
+
+    @@keyframes floatOrb {
+        0%,100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-18px);
+        }
+    }
+
+    .privacy-hero {
+        position: relative;
+        z-index: 2;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 5rem 1.5rem 3rem;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 3rem;
+        align-items: center;
+    }
+
+    .privacy-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(212,137,10,0.12);
+        color: var(--amber);
+        padding: 0.45rem 1rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(212,137,10,0.18);
+        animation: fadeUp 0.7s ease;
+    }
+
+    .privacy-pill-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--amber);
+        animation: pulseDot 1.6s infinite;
+    }
+
+    @@keyframes pulseDot {
+        0%,100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(1.4);
+            opacity: 0.5;
+        }
+    }
+
+    .privacy-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        line-height: 1.05;
+        margin-bottom: 1.3rem;
+        animation: fadeUp 0.8s ease;
+    }
+
+    .privacy-title span {
+        color: var(--amber);
+        font-style: italic;
+    }
+
+    .privacy-sub {
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        max-width: 620px;
+        animation: fadeUp 1s ease;
+    }
+
+    .privacy-glass-card {
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255,255,255,0.5);
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(27,42,74,0.08);
+        position: relative;
+        overflow: hidden;
+        animation: fadeScale 0.9s ease;
+    }
+
+    .privacy-glass-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+        pointer-events: none;
+    }
+
+    .privacy-highlight {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .privacy-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--navy), var(--navy-light));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        box-shadow: 0 12px 25px rgba(27,42,74,0.18);
+    }
+
+    .privacy-highlight h4 {
+        margin-bottom: 0.25rem;
+        font-size: 1.05rem;
+    }
+
+    .privacy-highlight p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    .privacy-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .privacy-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.28s ease;
+        box-shadow: 0 10px 30px rgba(27,42,74,0.04);
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    .privacy-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .privacy-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 35px rgba(27,42,74,0.08);
+        border-color: rgba(212,137,10,0.25);
+    }
+
+    .privacy-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--amber), var(--navy));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+
+    .privacy-card:hover::after {
+        transform: scaleX(1);
+    }
+
+    .privacy-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .privacy-card p,
+    .privacy-card li {
+        color: var(--text-muted);
+        line-height: 1.75;
+        font-size: 0.95rem;
+    }
+
+    .privacy-card ul {
+        padding-left: 1.2rem;
+        margin-bottom: 0;
+    }
+
+    .privacy-footer {
+        max-width: 1100px;
+        margin: 3rem auto 0;
+        padding: 0 1.5rem;
+    }
+
+    .privacy-footer-box {
+        background: linear-gradient(135deg, var(--navy), #22385f);
+        color: white;
+        border-radius: 28px;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(27,42,74,0.18);
+    }
+
+    .privacy-footer-box::before {
+        content: '';
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+        top: -100px;
+        right: -80px;
+    }
+
+    .privacy-footer-box h2 {
+        color: white;
+        margin-bottom: 0.7rem;
+    }
+
+    .privacy-footer-box p {
+        color: rgba(255,255,255,0.82);
+        max-width: 680px;
+        line-height: 1.8;
+        margin-bottom: 0;
+    }
+
+    @@keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeScale {
+        from {
+            opacity: 0;
+            transform: scale(0.94);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .privacy-hero {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="privacy-wrapper">
+
+    <div class="privacy-bg-orb one"></div>
+    <div class="privacy-bg-orb two"></div>
+
+    <section class="privacy-hero">
+
+        <div>
+            <div class="privacy-pill">
+                <div class="privacy-pill-dot"></div>
+                Your data matters.
+            </div>
+
+            <h1 class="privacy-title">
+                Privacy with <span>clarity</span> & trust.
+            </h1>
+
+            <p class="privacy-sub">
+                StudyBuddy is designed to create a safe and collaborative educational environment.
+                We keep your information secure, transparent, and used only to improve your learning experience.
+            </p>
+        </div>
+
+        <div class="privacy-glass-card">
+
+            <div class="privacy-highlight">
+                <div class="privacy-icon">🔒</div>
+                <div>
+                    <h4>Secure by Design</h4>
+                    <p>
+                        Your account, activity, and educational content are protected with modern security practices.
+                    </p>
+                </div>
+            </div>
+
+            <div class="privacy-highlight">
+                <div class="privacy-icon">📚</div>
+                <div>
+                    <h4>Student Focused</h4>
+                    <p>
+                        We collect only the information needed to improve collaboration and learning.
+                    </p>
+                </div>
+            </div>
+
+            <div class="privacy-highlight">
+                <div class="privacy-icon">⚡</div>
+                <div>
+                    <h4>Transparent Policies</h4>
+                    <p>
+                        No hidden tracking. No confusing language. Just clear explanations of how your data works.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="privacy-content">
+
+        <div class="privacy-card reveal-card">
+            <h3>Information We Collect</h3>
+            <p>
+                We may collect personal information such as usernames, email addresses, uploaded notes,
+                feedback, and account preferences to improve your experience inside StudyBuddy.
+            </p>
+        </div>
+
+        <div class="privacy-card reveal-card">
+            <h3>How Your Data Is Used</h3>
+            <ul>
+                <li>To personalize your learning experience.</li>
+                <li>To improve collaboration between students.</li>
+                <li>To provide platform updates and notifications.</li>
+                <li>To maintain security and prevent misuse.</li>
+            </ul>
+        </div>
+
+        <div class="privacy-card reveal-card">
+            <h3>Content Ownership</h3>
+            <p>
+                Notes, posts, and educational materials uploaded by users remain their intellectual property.
+                StudyBuddy only stores and displays content for platform functionality.
+            </p>
+        </div>
+
+        <div class="privacy-card reveal-card">
+            <h3>Account Protection</h3>
+            <p>
+                We implement authentication and security measures designed to protect user accounts and reduce
+                unauthorized access risks.
+            </p>
+        </div>
+
+        <div class="privacy-card reveal-card">
+            <h3>Community Guidelines</h3>
+            <p>
+                Users are expected to maintain respectful behavior, avoid harmful content,
+                and support a positive academic environment.
+            </p>
+        </div>
+
+        <div class="privacy-card reveal-card">
+            <h3>Policy Updates</h3>
+            <p>
+                This policy may evolve as StudyBuddy grows. Significant changes will be communicated directly to users.
+            </p>
+        </div>
+
+    </section>
+
+    <section class="privacy-footer">
+        <div class="privacy-footer-box">
+            <h2>Built for students. Designed with trust.</h2>
+            <p>
+                StudyBuddy combines collaboration, productivity, and academic support while respecting user privacy.
+                Your data should help you learn — not become a product.
+            </p>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const revealCards = document.querySelectorAll('.reveal-card');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.15
+    });
+
+    revealCards.forEach((card) => observer.observe(card));
+</script>
+

@@ -58,7 +58,12 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        transition: opacity 0.15s;
     }
+
+        .note-meta-author:hover {
+            opacity: 0.75;
+        }
 
     .note-meta-avatar {
         width: 32px;
@@ -774,15 +779,15 @@
                 <span class="note-subject-badge">@Model.Note.Subject</span>
                 <h1>@Model.Note.Topic</h1>
                 <div class="note-meta">
-                    <div class="note-meta-author">
+                    <a class="note-meta-author" asp-page="/Profile/Index" asp-route-userId="@Model.Note.CreatorId" style="text-decoration:none;">
                         <div class="note-meta-avatar">
                             @(Model.Note.Creator?.FirstName?.Substring(0, 1).ToUpper())@(Model.Note.Creator?.LastName?.Substring(0, 1).ToUpper())
                         </div>
                         <div class="note-meta-author-info">
-                            <strong>@Model.Note.Creator?.FirstName @Model.Note.Creator?.LastName</strong>
+                            <strong style="color:var(--navy);">@Model.Note.Creator?.FirstName @Model.Note.Creator?.LastName</strong>
                             <span>@Model.Note.DateOfCreation.ToString("MMMM dd, yyyy")</span>
                         </div>
-                    </div>
+                    </a>
                     <div class="note-meta-divider"></div>
                     <span class="note-meta-stat">❤️ @Model.Note.Likes likes</span>
                 </div>
@@ -800,8 +805,6 @@
             <div class="note-actions-bar">
                 <form method="post" asp-page-handler="Like">
                     <input type="hidden" name="id" value="@Model.Note.Id" />
-                    <input type="hidden" name="targetId" value="@Model.Note.CreatorId" />
-                    <input type="hidden" name="doerId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
                     <button type="submit" class="action-btn">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
                         Like (@Model.Note.Likes)

@@ -16,7 +16,7 @@ namespace StudyBuddy.Data
         public DbSet<Reply> Replies { get; set; }
         public DbSet<Report > Reports { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
-
+        public DbSet<Post> Posts { get; set; }
         public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -122,6 +122,13 @@ namespace StudyBuddy.Data
                 .HasOne(n => n.Actor)
                 .WithMany()
                 .HasForeignKey(n => n.ActorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //Post
+            builder.Entity<Post>()
+                .HasOne(n => n.Author)
+                .WithMany()
+                .HasForeignKey(n => n.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

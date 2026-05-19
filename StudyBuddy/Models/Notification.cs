@@ -34,6 +34,7 @@ namespace StudyBuddy.Models
         BlogLiked,
         CommentLiked,
         NewComment,
-        NewFollower
+        NewFollower,
+        PostLike
     }
 }

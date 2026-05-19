@@ -72,7 +72,12 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        transition: opacity 0.15s;
     }
+
+        .blog-author-info:hover {
+            opacity: 0.75;
+        }
 
     .blog-author-avatar {
         width: 40px;
@@ -515,15 +520,15 @@
                 <h1 class="blog-article-title">@Model.Blog.Title</h1>
                 <p class="blog-article-summary">@Model.Blog.Summary</p>
                 <div class="blog-author-row">
-                    <div class="blog-author-info">
+                    <a class="blog-author-info" asp-page="/Profile/Index" asp-route-userId="@Model.Blog.AuthorId" style="text-decoration:none;">
                         <div class="blog-author-avatar">
                             @(Model.Blog.Author?.FirstName?.Substring(0, 1).ToUpper())@(Model.Blog.Author?.LastName?.Substring(0, 1).ToUpper())
                         </div>
                         <div class="blog-author-details">
-                            <strong>@Model.Blog.Author?.FirstName @Model.Blog.Author?.LastName</strong>
+                            <strong style="color:var(--navy);">@Model.Blog.Author?.FirstName @Model.Blog.Author?.LastName</strong>
                             <span>@Model.Blog.PublishedAt?.ToString("MMMM dd, yyyy") ?? "Draft"</span>
                         </div>
-                    </div>
+                    </a>
                     <div class="blog-meta-divider"></div>
                     <span class="blog-meta-stat">❤️ @Model.Blog.Likes likes</span>
                     <span class="blog-meta-stat">👁️ @Model.Blog.Views views</span>
@@ -535,8 +540,6 @@
             <div class="blog-action-bar">
                 <form method="post" asp-page-handler="Like">
                     <input type="hidden" name="id" value="@Model.Blog.Id" />
-                    <input type="hidden" name="targetId" value="@Model.Blog.AuthorId" />
-                    <input type="hidden" name="doerId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
                     <button type="submit" class="action-btn">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
                         Like (@Model.Blog.Likes)

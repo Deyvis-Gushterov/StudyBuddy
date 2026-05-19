@@ -125,8 +125,10 @@ namespace StudyBuddy.Services.Implementations
                 NotificationType.BlogLiked => $"{actorName} liked your blog",
                 NotificationType.CommentLiked => $"{actorName} liked your comment",
                 NotificationType.NewComment => $"{actorName} commented on your blog",
+                NotificationType.PostLike => $"{actorName} liked your post",
                 NotificationType.NewFollower => $"{actorName} started following you",
-                _ => $"{actorName} interacted with your content"
+                _ => $"{actorName} interacted with your content",
+                
             };
         }
 

@@ -8,11 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - StudyBuddy</title>
 
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+   
 
     <style>
         :root {
@@ -489,6 +492,43 @@
         text-align: center;
         }
         }
+
+        .sb-bell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .sb-bell:hover {
+        background: rgba(27,42,74,0.08);
+        transform: scale(1.1);
+        }
+
+        .sb-bell-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #EF4444;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        min-width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 3px;
+        border: 2px solid white;
+        }
+
     </style>
 </head>
 <body>
@@ -497,7 +537,7 @@
     <form id="antiforgery-form" style="display:none;">
         @Html.AntiForgeryToken()
     </form>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script>
         // HTMX antiforgery token
         document.addEventListener('htmx:configRequest', function(evt) {
@@ -542,6 +582,13 @@
                 {
                     <span class="sb-admin-badge">Admin</span>
                 }
+
+                <a href="/Notifications/Index" class="sb-bell" id="notifBell" title="Notifications">
+                    🔔
+                    <span class="sb-bell-badge" id="notifBadge" style="display:none;">0</span>
+                </a>
+
+
                 <div class="sb-user-badge">
                     <div class="sb-avatar">
                         @(User.Identity.Name?.Substring(0, 2).ToUpper() ?? "U")
@@ -592,6 +639,58 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        (function () {
+        const badge = document.getElementById('notifBadge');
+        if (!badge) return;
+
+        fetch('/api/notifications/unread-count')
+        .then(r => r.json())
+        .then(data => updateBadge(data.count))
+        .catch(() => {});
+
+        const connection = new signalR.HubConnectionBuilder()
+        .withUrl('/notificationHub')
+        .withAutomaticReconnect()
+        .build();
+
+        connection.on('ReceiveNotification', function (n) {
+        updateBadge(n.unreadCount);
+        showToast(n.message);
+        });
+
+        connection.start().catch(err => console.warn('SignalR:', err));
+
+        function updateBadge(count) {
+        if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = 'flex';
+        } else {
+        badge.style.display = 'none';
+        }
+        }
+
+        function showToast(message) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+        position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+        background: #1B2A4A; color: white;
+        padding: 0.75rem 1.25rem; border-radius: 10px;
+        font-size: 0.875rem; box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        display: flex; align-items: center; gap: 0.5rem;
+        max-width: 320px;
+        `;
+        toast.innerHTML = `<span>🔔</span><span>${message}</span>`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.25s ease';
+        setTimeout(() => toast.remove(), 300);
+        }, 4000);
+        }
+        })();
+    </script>
 
 </body>
 </html>

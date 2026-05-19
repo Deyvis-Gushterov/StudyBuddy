@@ -9,10 +9,11 @@ namespace StudyBuddy.Services.Implementations
     public class CommentService: ICommentService
     {
         private readonly ApplicationDbContext context;
-
-        public CommentService(ApplicationDbContext context)
+        private readonly INotificationService notificationService;
+        public CommentService(ApplicationDbContext context, INotificationService notificationService)
         {
             this.context = context;
+            this.notificationService = notificationService;
         }
 
         public async Task<Comment?> GetCommentByIdAsync(int id)
@@ -76,7 +77,7 @@ namespace StudyBuddy.Services.Implementations
 
             return comment;
         }
-        public async Task<bool> LikeCommentAsync(int id)
+        public async Task<bool> LikeCommentAsync(int id, string targetId, string doerId)
         {
             var comment = await context.Comments
                 .Where(c => c.Id == id)
@@ -89,6 +90,13 @@ namespace StudyBuddy.Services.Implementations
 
             comment.Likes++;
             await context.SaveChangesAsync();
+
+            await notificationService.CreateAsync(
+            recipientId: targetId,
+            authorId: doerId,
+            type: NotificationType.CommentLiked
+        );
+
             return true;
         }
         public async Task<bool> DislikeCommentAsync(int id)

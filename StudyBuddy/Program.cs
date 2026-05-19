@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Data;
+using StudyBuddy.Hubs;
 using StudyBuddy.Models;
-using StudyBuddy.Services.Interfaces;
 using StudyBuddy.Services.Implementations;
+using StudyBuddy.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,9 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 builder.Services.AddHttpClient<IAiService, AiService>();
 builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
 
 builder.Services.AddRazorPages();
 
@@ -68,6 +71,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllers();
 

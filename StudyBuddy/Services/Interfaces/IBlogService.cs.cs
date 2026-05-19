@@ -12,7 +12,7 @@ namespace StudyBuddy.Services.Interfaces
         Task<Blog?> GetBlogWithOwnerAsync(int id);
         Task<bool> PublishBlogAsync(int id);
         Task<bool> UnpublishBlogAsync(int id);
-        Task<bool> LikeBlogAsync(int id);
+        Task<bool> LikeBlogAsync(int id, string targetId, string doerId);
 
         Task<bool> IncrementViewAsync(int id);
     }

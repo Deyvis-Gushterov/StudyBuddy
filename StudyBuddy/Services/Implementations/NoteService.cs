@@ -6,13 +6,14 @@ using StudyBuddy.Services.Interfaces;
 
 namespace StudyBuddy.Services.Implementations
 {
-    public class NoteService: INoteService
+    public class NoteService : INoteService
     {
         private readonly ApplicationDbContext context;
-
-        public NoteService(ApplicationDbContext context)
+        private readonly INotificationService notificationService;
+        public NoteService(ApplicationDbContext context, INotificationService notificationService)
         {
             this.context = context;
+            this.notificationService = notificationService;
         }
 
         public async Task<Note?> GetNoteByIdAsync(int id)
@@ -72,7 +73,7 @@ namespace StudyBuddy.Services.Implementations
             var note = await context.Notes
                 .Where(n => n.Id == id)
                 .FirstOrDefaultAsync();
-                
+
             if (note == null)
             {
                 return false;
@@ -81,7 +82,7 @@ namespace StudyBuddy.Services.Implementations
             context.Notes.Remove(note);
             await context.SaveChangesAsync();
             return true;
-            
+
         }
 
         public async Task<Note> GetNoteWithOwnerAsync(int id)
@@ -98,8 +99,18 @@ namespace StudyBuddy.Services.Implementations
             return note;
         }
 
-        public async Task<bool> LikeAsync(int id)
+        public async Task<bool> LikeAsync(int id, string targetId, string doerId)
         {
+            if (targetId == null)
+            {
+                return false;
+            }
+
+            if (doerId == null)
+            {
+                return false;
+            }
+
             var note = await context.Notes
                 .Where(n => n.Id == id)
                 .FirstOrDefaultAsync();
@@ -111,6 +122,14 @@ namespace StudyBuddy.Services.Implementations
 
             note.Likes++;
             await context.SaveChangesAsync();
+
+            await notificationService.CreateAsync(
+                recipientId: targetId,   
+                authorId: doerId,     
+                type: NotificationType.NoteLiked
+            );
+
+
             return true;
         }
     }

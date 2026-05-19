@@ -9,7 +9,7 @@ namespace StudyBuddy.Services.Interfaces
         Task<Comment?> CreateCommentAsync(Comment comment);
         Task<bool> DeleteCommentAsync(int id);
         Task<Comment?> GetCommentWithOwnerAsync(int id);
-        Task<bool> LikeCommentAsync(int id);
+        Task<bool> LikeCommentAsync(int id, string targetId, string doerId);
         Task<bool> DislikeCommentAsync(int id);
     }
 }

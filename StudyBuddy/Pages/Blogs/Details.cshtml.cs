@@ -42,9 +42,9 @@ namespace StudyBuddy.Pages.BlogPages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostLikeAsync(int id)
+        public async Task<IActionResult> OnPostLikeAsync(int id, string targetId, string doerId)
         {
-            await _blogService.LikeBlogAsync(id);
+            await _blogService.LikeBlogAsync(id, targetId, doerId);
             return RedirectToPage(new { id });
         }
 
@@ -106,12 +106,12 @@ namespace StudyBuddy.Pages.BlogPages
             return RedirectToPage(new { id = blogId });
         }
 
-        public async Task<IActionResult> OnPostLikeCommentAsync(int commentId)
+        public async Task<IActionResult> OnPostLikeCommentAsync(int commentId, string targetId, string doerId)
         {
             var comment = await _commentService.GetCommentByIdAsync(commentId);
             if (comment == null) return NotFound();
 
-            await _commentService.LikeCommentAsync(commentId);
+            await _commentService.LikeCommentAsync(commentId, targetId, doerId);
             return RedirectToPage(new { id = comment.BlogId });
         }
 

@@ -10,7 +10,7 @@ namespace StudyBuddy.Services.Interfaces
         Task<Note?> UpdateNoteAsync(int id, Note note);
         Task<bool> DeleteNoteAsync(int id);
         Task<Note?> GetNoteWithOwnerAsync(int id);
-        Task<bool> LikeAsync(int id);
+        Task<bool> LikeAsync(int id, string targetId, string doerId);
 
     }
 }

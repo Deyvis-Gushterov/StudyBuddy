@@ -71,6 +71,8 @@ namespace StudyBuddy.Pages.BlogPages
 
         public async Task<IActionResult> OnPostSuggestAsync(string contentSnapshot)
         {
+            ModelState.Clear(); 
+
             if (string.IsNullOrWhiteSpace(contentSnapshot))
             {
                 AiSuggestions = "Please write some content first before asking for suggestions.";
@@ -83,6 +85,8 @@ namespace StudyBuddy.Pages.BlogPages
 
         public async Task<IActionResult> OnPostSuggestTagsAsync(string contentSnapshot)
         {
+            ModelState.Clear(); 
+
             if (string.IsNullOrWhiteSpace(contentSnapshot))
             {
                 SuggestedTags = new List<string> { "Please write some content first." };

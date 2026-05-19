@@ -49,9 +49,9 @@ namespace StudyBuddy.Controllers
 
 
             [HttpPost("{id}/like")]
-        public async Task<IActionResult> LikeComment(int id)
+        public async Task<IActionResult> LikeComment(int id, string targetId,string doerId)
         {
-            await _commentService.LikeCommentAsync(id);
+            await _commentService.LikeCommentAsync(id, targetId, doerId);
             var comment = await _commentService.GetCommentByIdAsync(id);
             return Content(comment?.Likes.ToString() ?? "0");
         }

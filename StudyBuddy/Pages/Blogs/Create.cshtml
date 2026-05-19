@@ -266,7 +266,7 @@
     <div class="create-form-card">
         <form method="post" id="blogForm">
 
-            @if (!ViewData.ModelState.IsValid)
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey("Input.Title"))
             {
                 <div class="sb-alert sb-alert-danger">
                     @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
@@ -340,14 +340,13 @@
             <div class="ai-sidebar-body">
 
                 <!-- Writing Suggestions -->
-                <form method="post" asp-page-handler="Suggest" id="suggestForm">
+                <form method="post" asp-page-handler="Suggest" id="suggestForm"
+                      onsubmit="document.getElementById('contentSnapshot').value = document.getElementById('contentInput').value">
                     <input type="hidden" name="contentSnapshot" id="contentSnapshot" />
-                    <button type="submit" class="ai-action-btn" id="suggestBtn"
-                            onclick="document.getElementById('contentSnapshot').value = document.getElementById('contentInput').value">
+                    <button type="submit" class="ai-action-btn" id="suggestBtn">
                         ✍️ Get Writing Suggestions
                     </button>
                 </form>
-
                 @if (Model.AiSuggestions != null)
                 {
                     <div class="ai-result-label">✨ Suggestions</div>
@@ -356,10 +355,10 @@
                 }
 
                 <!-- Tag Suggestions -->
-                <form method="post" asp-page-handler="SuggestTags" id="tagsForm">
+                <form method="post" asp-page-handler="SuggestTags" id="tagsForm"
+                      onsubmit="document.getElementById('contentSnapshotTags').value = document.getElementById('contentInput').value">
                     <input type="hidden" name="contentSnapshot" id="contentSnapshotTags" />
-                    <button type="submit" class="ai-action-btn amber" id="tagsBtn"
-                            onclick="document.getElementById('contentSnapshotTags').value = document.getElementById('contentInput').value">
+                    <button type="submit" class="ai-action-btn amber" id="tagsBtn">
                         🏷️ Auto-suggest Tags
                     </button>
                 </form>

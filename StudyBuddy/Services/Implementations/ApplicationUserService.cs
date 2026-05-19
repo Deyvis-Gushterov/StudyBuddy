@@ -8,10 +8,11 @@ namespace StudyBuddy.Services.Implementations
     public class ApplicationUserService:IApplicationUserService
     {
         private readonly ApplicationDbContext context;
-
-        public ApplicationUserService(ApplicationDbContext context)
+        private readonly INotificationService notificationService;
+        public ApplicationUserService(ApplicationDbContext context, INotificationService notificationService)
         {
             this.context = context;
+            this.notificationService = notificationService;
         }
 
         // Basic queries
@@ -127,6 +128,12 @@ namespace StudyBuddy.Services.Implementations
 
             target.Followers.Add(follower);
             await context.SaveChangesAsync();
+
+            await notificationService.CreateAsync(
+        recipientId: targetId,   // the person being followed
+        authorId: followerId,     // the person who followed
+        type: NotificationType.NewFollower
+    );
             return true;
         }
         public async Task<bool> UnfollowUserAsync(string followerId, string targetId)

@@ -9,10 +9,11 @@ namespace StudyBuddy.Services.Implementations
     public class BlogService: IBlogService
     {
         private readonly ApplicationDbContext context;
-
-        public BlogService(ApplicationDbContext context)
+        private readonly INotificationService notificationService;
+        public BlogService(ApplicationDbContext context,INotificationService notificationService)
         {
             this.context = context;
+            this.notificationService = notificationService;
         }
 
         public async Task<bool> IncrementViewAsync(int id)
@@ -142,7 +143,7 @@ namespace StudyBuddy.Services.Implementations
             return true;
         }
 
-        public async Task<bool> LikeBlogAsync(int id)
+        public async Task<bool> LikeBlogAsync(int id, string targetId, string doerId)
         {
             var blog = await context.Blogs
         .FirstOrDefaultAsync(b => b.Id == id);
@@ -154,6 +155,13 @@ namespace StudyBuddy.Services.Implementations
 
             blog.Likes++;
             await context.SaveChangesAsync();
+
+            await notificationService.CreateAsync(
+              recipientId: targetId,   
+              authorId: doerId,     
+              type: NotificationType.BlogLiked
+          );
+
             return true;
         }
     }

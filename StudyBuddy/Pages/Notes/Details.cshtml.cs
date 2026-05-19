@@ -47,9 +47,9 @@ namespace StudyBuddy.Pages.NotePages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostLikeAsync(int id)
+        public async Task<IActionResult> OnPostLikeAsync(int id, string targetId, string doerId)
         {
-            await _noteService.LikeAsync(id);
+            await _noteService.LikeAsync(id, targetId, doerId);
             return RedirectToPage(new { id });
         }
 

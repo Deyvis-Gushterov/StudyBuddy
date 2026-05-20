@@ -98,6 +98,12 @@ namespace StudyBuddy.Data
                 .HasForeignKey(c => c.BlogId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Comment>()
+                .HasOne(c => c.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Reply relationships
             builder.Entity<Reply>()
                 .HasOne(r => r.Author)

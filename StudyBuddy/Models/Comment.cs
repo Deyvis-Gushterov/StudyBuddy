@@ -23,6 +23,9 @@ namespace StudyBuddy.Models
         [ForeignKey("BlogId")]
         public Blog Blog { get; set; } = null!;
 
+        public int? PostId { get; set; }
+        [ForeignKey("PostId")]
+        public Post? Post { get; set; }
         public ICollection<Reply> Replies { get; set; } = new List<Reply>();
     }
 }

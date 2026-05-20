@@ -111,7 +111,7 @@ namespace StudyBuddy.Pages.BlogPages
             var comment = await _commentService.GetCommentByIdAsync(commentId);
             if (comment == null) return NotFound();
 
-            await _commentService.LikeCommentAsync(commentId, targetId, doerId);
+            await _commentService.LikeCommentAsync(commentId);
             return RedirectToPage(new { id = comment.BlogId });
         }
 

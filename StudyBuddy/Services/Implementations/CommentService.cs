@@ -6,14 +6,13 @@ using StudyBuddy.Services.Interfaces;
 
 namespace StudyBuddy.Services.Implementations
 {
-    public class CommentService: ICommentService
+    public class CommentService : ICommentService
     {
         private readonly ApplicationDbContext context;
-        private readonly INotificationService notificationService;
-        public CommentService(ApplicationDbContext context, INotificationService notificationService)
+
+        public CommentService(ApplicationDbContext context)
         {
             this.context = context;
-            this.notificationService = notificationService;
         }
 
         public async Task<Comment?> GetCommentByIdAsync(int id)
@@ -66,7 +65,7 @@ namespace StudyBuddy.Services.Implementations
         {
             var comment = await context.Comments
                 .Include(c => c.Author)
-                .Include (c => c.Replies)
+                .Include(c => c.Replies)
                 .Where(c => c.Id == id)
                 .FirstOrDefaultAsync();
 
@@ -77,7 +76,7 @@ namespace StudyBuddy.Services.Implementations
 
             return comment;
         }
-        public async Task<bool> LikeCommentAsync(int id, string targetId, string doerId)
+        public async Task<bool> LikeCommentAsync(int id)
         {
             var comment = await context.Comments
                 .Where(c => c.Id == id)
@@ -90,13 +89,6 @@ namespace StudyBuddy.Services.Implementations
 
             comment.Likes++;
             await context.SaveChangesAsync();
-
-            await notificationService.CreateAsync(
-            recipientId: targetId,
-            authorId: doerId,
-            type: NotificationType.CommentLiked
-        );
-
             return true;
         }
         public async Task<bool> DislikeCommentAsync(int id)
@@ -113,6 +105,35 @@ namespace StudyBuddy.Services.Implementations
             comment.Dislikes++;
             await context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<Comment?> CreatePostCommentAsync(int postId, string content, string authorId)
+        {
+            if (string.IsNullOrWhiteSpace(content)) return null;
+
+            var comment = new Comment
+            {
+                Content = content,
+                AuthorId = authorId,
+                PostId = postId
+            };
+
+            context.Comments.Add(comment);
+            await context.SaveChangesAsync();
+
+            // Return with author included
+            return await context.Comments
+                .Include(c => c.Author)
+                .FirstOrDefaultAsync(c => c.Id == comment.Id);
+        }
+
+        public async Task<List<Comment>> GetPostCommentsAsync(int postId)
+        {
+            return await context.Comments
+                .Where(c => c.PostId == postId)
+                .Include(c => c.Author)
+                .OrderByDescending(c => c.Id)
+                .ToListAsync();
         }
     }
 }

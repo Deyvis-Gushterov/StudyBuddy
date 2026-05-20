@@ -1,0 +1,17 @@
+@model StudyBuddy.Models.Comment
+
+<div class="post-comment-item" id="comment-@Model.Id">
+    <div class="post-comment-avatar">
+        @(Model.Author?.FirstName?.Substring(0,1).ToUpper())@(Model.Author?.LastName?.Substring(0,1).ToUpper())
+    </div>
+    <div class="post-comment-body">
+        <div class="post-comment-header">
+            <a class="post-comment-author"
+               asp-page="/Profile/Index"
+               asp-route-userId="@Model.AuthorId">
+                @Model.Author?.FirstName @Model.Author?.LastName
+            </a>
+        </div>
+        <p class="post-comment-text">@Model.Content</p>
+    </div>
+</div>

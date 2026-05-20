@@ -36,22 +36,36 @@ namespace StudyBuddy.Controllers
                 Content = content,
                 AuthorId = user.Id,
                 BlogId = blogId,
-                Author = user  // ← set directly, no DB lookup needed
+                Author = user
             };
 
             var result = await _commentService.CreateCommentAsync(comment);
             if (result == null) return BadRequest();
 
-            // Use the original comment object which already has Author set
-            // instead of fetching from DB again
             return PartialView("_Comment", comment);
         }
 
-
-            [HttpPost("{id}/like")]
-        public async Task<IActionResult> LikeComment(int id, string targetId,string doerId)
+        [HttpPost("add-post-comment")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddPostComment(int postId, string content)
         {
-            await _commentService.LikeCommentAsync(id, targetId, doerId);
+            if (string.IsNullOrWhiteSpace(content))
+                return BadRequest("Comment cannot be empty.");
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var comment = await _commentService.CreatePostCommentAsync(postId, content, user.Id);
+            if (comment == null) return BadRequest();
+
+            return PartialView("_PostComment", comment);
+        }
+
+
+        [HttpPost("{id}/like")]
+        public async Task<IActionResult> LikeComment(int id)
+        {
+            await _commentService.LikeCommentAsync(id);
             var comment = await _commentService.GetCommentByIdAsync(id);
             return Content(comment?.Likes.ToString() ?? "0");
         }

@@ -19,15 +19,14 @@ namespace StudyBuddy.Services.Implementations
 
         public async Task<List<Post>> GetFeedAsync(List<string> followingIds, int count = 20)
         {
-           
-            var posts = await context.Posts
+            return await context.Posts
                 .Where(p => followingIds.Contains(p.AuthorId))
                 .Include(p => p.Author)
+                .Include(p => p.Comments)
+                    .ThenInclude(c => c.Author)
                 .OrderByDescending(p => p.CreatedAt)
                 .Take(count)
                 .ToListAsync();
-
-            return posts;
         }
 
         public async Task<List<Post>> GetAllPostsAsync()

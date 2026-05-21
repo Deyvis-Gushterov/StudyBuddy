@@ -11,6 +11,6 @@ namespace StudyBuddy.Services.Interfaces
         Task<bool> DeleteNoteAsync(int id);
         Task<Note?> GetNoteWithOwnerAsync(int id);
         Task<bool> LikeAsync(int id, string targetId, string doerId);
-
+        Task<(List<Note> Items, int TotalCount)> GetPagedAsync(string? search, string? subject, int page, int pageSize);
     }
 }

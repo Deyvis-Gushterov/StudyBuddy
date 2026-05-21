@@ -19,9 +19,10 @@ namespace StudyBuddy.Models
         public int Likes { get; set; }
         public int Dislikes { get; set; }
 
-        public int BlogId { get; set; }
+        public int? BlogId { get; set; }
+
         [ForeignKey("BlogId")]
-        public Blog Blog { get; set; } = null!;
+        public Blog? Blog { get; set; }
 
         public int? PostId { get; set; }
         [ForeignKey("PostId")]

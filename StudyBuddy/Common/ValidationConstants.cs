@@ -32,5 +32,10 @@ namespace StudyBuddy.Common
         //Message
         public const int MinFeedbackMessageLength = 10;
         public const int MaxFeedbackMessageLength = 200;
+
+        //StudyGroup
+        public const int MaxGroupNameLength = 60;
+        public const int MinGroupDescriptionLength = 10;
+        public const int MaxGroupDescriptionLength = 200;
     }
 }

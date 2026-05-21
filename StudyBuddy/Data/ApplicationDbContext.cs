@@ -18,6 +18,8 @@ namespace StudyBuddy.Data
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<StudyGroup> StudyGroups { get; set; }
+        public DbSet<StudyGroupMember> StudyGroupMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -52,6 +54,7 @@ namespace StudyBuddy.Data
                 .HasMany(u => u.Followers)
                 .WithMany()
                 .UsingEntity(j => j.ToTable("UserFollowers"));
+
 
             // Report
             builder.Entity<Report>()
@@ -136,6 +139,32 @@ namespace StudyBuddy.Data
                 .WithMany()
                 .HasForeignKey(n => n.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //StudyGroup
+            builder.Entity<StudyGroup>()
+                .HasOne(g => g.Creator)
+                .WithMany()
+                .HasForeignKey(n => n.CreatorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<StudyGroup>()
+                .HasMany(g => g.Members)
+                .WithOne(m => m.StudyGroup)
+                .HasForeignKey(m => m.StudyGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //GroupMember
+
+            builder.Entity<StudyGroupMember>()
+                .HasKey(m => new { m.StudyGroupId, m.UserId });
+
+            builder.Entity<StudyGroupMember>()
+                .HasOne(g => g.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+     
         }
     }
 }

@@ -164,5 +164,29 @@ namespace StudyBuddy.Services.Implementations
 
             return true;
         }
+
+        public async Task<(List<Blog> Items, int TotalCount)> GetPagedAsync(string? search, int page, int pageSize)
+        {
+            var query = context.Blogs
+                .Include(b => b.Author)
+                .Include(b => b.Tags)
+                .Where(b => b.PublishedAt != null)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(b =>
+                    b.Title.Contains(search) ||
+                    b.Summary.Contains(search));
+
+            var total = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(b => b.PublishedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, total);
+        }
     }
 }

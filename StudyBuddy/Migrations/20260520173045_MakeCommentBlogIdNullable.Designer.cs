@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudyBuddy.Data;
 
@@ -11,9 +12,11 @@ using StudyBuddy.Data;
 namespace StudyBuddy.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260520173045_MakeCommentBlogIdNullable")]
+    partial class MakeCommentBlogIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -644,62 +647,6 @@ namespace StudyBuddy.Migrations
                     b.ToTable("Reports");
                 });
 
-            modelBuilder.Entity("StudyBuddy.Models.StudyGroup", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.Property<int>("Subject")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("StudyGroups");
-                });
-
-            modelBuilder.Entity("StudyBuddy.Models.StudyGroupMember", b =>
-                {
-                    b.Property<int>("StudyGroupId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("JoinedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudyGroupId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StudyGroupMembers");
-                });
-
             modelBuilder.Entity("ApplicationUserApplicationUser", b =>
                 {
                     b.HasOne("StudyBuddy.Models.ApplicationUser", null)
@@ -947,36 +894,6 @@ namespace StudyBuddy.Migrations
                     b.Navigation("Reporter");
                 });
 
-            modelBuilder.Entity("StudyBuddy.Models.StudyGroup", b =>
-                {
-                    b.HasOne("StudyBuddy.Models.ApplicationUser", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
-                });
-
-            modelBuilder.Entity("StudyBuddy.Models.StudyGroupMember", b =>
-                {
-                    b.HasOne("StudyBuddy.Models.StudyGroup", "StudyGroup")
-                        .WithMany("Members")
-                        .HasForeignKey("StudyGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StudyBuddy.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("StudyGroup");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("StudyBuddy.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Notifications");
@@ -1001,11 +918,6 @@ namespace StudyBuddy.Migrations
             modelBuilder.Entity("StudyBuddy.Models.Post", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("StudyBuddy.Models.StudyGroup", b =>
-                {
-                    b.Navigation("Members");
                 });
 #pragma warning restore 612, 618
         }

@@ -13,7 +13,7 @@ namespace StudyBuddy.Services.Interfaces
         Task<bool> PublishBlogAsync(int id);
         Task<bool> UnpublishBlogAsync(int id);
         Task<bool> LikeBlogAsync(int id, string targetId, string doerId);
-
+        Task<(List<Blog> Items, int TotalCount)> GetPagedAsync(string? search, int page, int pageSize);
         Task<bool> IncrementViewAsync(int id);
     }
 }

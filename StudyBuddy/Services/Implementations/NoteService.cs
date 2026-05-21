@@ -132,5 +132,32 @@ namespace StudyBuddy.Services.Implementations
 
             return true;
         }
+
+        public async Task<(List<Note> Items, int TotalCount)> GetPagedAsync(
+    string? search, string? subject, int page, int pageSize)
+        {
+            var query = context.Notes
+                .Include(n => n.Creator)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(n =>
+                    n.Topic.Contains(search) ||
+                    n.BriefExplanation.Contains(search) ||
+                    n.Subject.Contains(search));
+
+            if (!string.IsNullOrWhiteSpace(subject) && subject != "all")
+                query = query.Where(n => n.Subject.ToLower() == subject.ToLower());
+
+            var total = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(n => n.DateOfCreation)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, total);
+        }
     }
 }

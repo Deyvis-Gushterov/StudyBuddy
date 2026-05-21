@@ -124,7 +124,7 @@ namespace StudyBuddy.Pages.BlogPages
             if (currentUser?.Id != comment.AuthorId && !User.IsInRole("Admin"))
                 return Forbid();
 
-            int blogId = comment.BlogId;
+            int? blogId = comment.BlogId;
             await _commentService.DeleteCommentAsync(commentId);
             return RedirectToPage(new { id = blogId });
         }

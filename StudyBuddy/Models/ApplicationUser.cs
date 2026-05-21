@@ -30,9 +30,5 @@ namespace StudyBuddy.Models
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public ICollection<Post> Posts { get; set; } = new List<Post>();
         public ICollection<ApplicationUser> Followers { get; set; } = new List<ApplicationUser>();
-
-
-        
-
     }
 }

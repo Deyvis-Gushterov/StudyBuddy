@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using StudyBuddy.Models;
+using StudyBuddy.Services.Implementations;
 using StudyBuddy.Services.Interfaces;
 
 namespace StudyBuddy.Pages.Dashboard
@@ -14,17 +15,20 @@ namespace StudyBuddy.Pages.Dashboard
         private readonly INoteService _noteService;
         private readonly IBlogService _blogService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IStudyGroupService studyGroupService;
 
         public IndexModel(
             IApplicationUserService userService,
             INoteService noteService,
             IBlogService blogService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IStudyGroupService studyGroupService)
         {
             _userService = userService;
             _noteService = noteService;
             _blogService = blogService;
             _userManager = userManager;
+            this.studyGroupService = studyGroupService;
         }
 
         public ApplicationUser? User { get; set; }
@@ -32,12 +36,15 @@ namespace StudyBuddy.Pages.Dashboard
         public List<Note> SavedNotes { get; set; } = new();
         public List<Blog> MyBlogs { get; set; } = new();
         public List<ApplicationUser> Followers { get; set; } = new();
+        public List<StudyGroup> MyGroups { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync()
         {
             var currentUser = await _userManager.GetUserAsync(base.User);
             if (currentUser == null)
                 return RedirectToPage("/Account/Login");
+
+            MyGroups = await studyGroupService.GetUserGroupsAsync(currentUser.Id);
 
             User = await _userService.GetUserWithDetailsAsync(currentUser.Id);
 

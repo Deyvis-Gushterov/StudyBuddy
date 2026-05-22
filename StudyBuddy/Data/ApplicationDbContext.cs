@@ -153,6 +153,18 @@ namespace StudyBuddy.Data
                 .HasForeignKey(m => m.StudyGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<StudyGroup>()
+                .HasMany(g => g.Notes)
+                .WithOne(n => n.StudyGroup)
+                .HasForeignKey(n => n.StudyGroupId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<StudyGroup>()
+                .HasMany(g => g.Blogs)
+                .WithOne(b => b.StudyGroup)
+                .HasForeignKey(b => b.StudyGroupId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             //GroupMember
 
             builder.Entity<StudyGroupMember>()

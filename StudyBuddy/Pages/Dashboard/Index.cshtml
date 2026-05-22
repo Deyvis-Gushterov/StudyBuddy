@@ -5,7 +5,6 @@
 }
 
 <style>
-    /* ── Profile Header ── */
     .dashboard-header {
         background: var(--white);
         border: 1px solid var(--border);
@@ -35,7 +34,9 @@
         border: 3px solid var(--amber);
     }
 
-    .dashboard-info { flex: 1; }
+    .dashboard-info {
+        flex: 1;
+    }
 
     .dashboard-name {
         font-family: var(--font-heading);
@@ -106,7 +107,6 @@
         align-items: flex-end;
     }
 
-    /* ── Tabs ── */
     .dashboard-tabs {
         display: flex;
         gap: 0.25rem;
@@ -134,13 +134,15 @@
         gap: 6px;
     }
 
-    .tab-btn:hover { color: var(--navy); }
+        .tab-btn:hover {
+            color: var(--navy);
+        }
 
-    .tab-btn.active {
-        color: var(--navy);
-        border-bottom-color: var(--navy);
-        font-weight: 600;
-    }
+        .tab-btn.active {
+            color: var(--navy);
+            border-bottom-color: var(--navy);
+            font-weight: 600;
+        }
 
     .tab-count {
         background: var(--cream);
@@ -158,11 +160,14 @@
         color: var(--white);
     }
 
-    /* ── Tab Panels ── */
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    .tab-panel {
+        display: none;
+    }
 
-    /* ── Notes Grid ── */
+        .tab-panel.active {
+            display: block;
+        }
+
     .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -181,10 +186,10 @@
         position: relative;
     }
 
-    .dash-note-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(27,42,74,0.1);
-    }
+        .dash-note-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27,42,74,0.1);
+        }
 
     .dash-card-subject {
         font-size: 0.7rem;
@@ -249,19 +254,18 @@
         transition: all 0.15s;
     }
 
-    .dash-card-btn:hover {
-        border-color: var(--navy);
-        color: var(--navy);
-        text-decoration: none;
-    }
+        .dash-card-btn:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+            text-decoration: none;
+        }
 
-    .dash-card-btn.danger:hover {
-        border-color: #EF4444;
-        color: #EF4444;
-        background: #FEE2E2;
-    }
+        .dash-card-btn.danger:hover {
+            border-color: #EF4444;
+            color: #EF4444;
+            background: #FEE2E2;
+        }
 
-    /* ── Blog Card ── */
     .dash-blog-card {
         background: var(--white);
         border: 1px solid var(--border);
@@ -273,12 +277,14 @@
         align-items: flex-start;
     }
 
-    .dash-blog-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(27,42,74,0.1);
-    }
+        .dash-blog-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27,42,74,0.1);
+        }
 
-    .dash-blog-content { flex: 1; }
+    .dash-blog-content {
+        flex: 1;
+    }
 
     .dash-blog-title {
         font-family: var(--font-heading);
@@ -323,7 +329,6 @@
         color: #92400E;
     }
 
-    /* ── Followers ── */
     .followers-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -343,10 +348,10 @@
         transition: all 0.2s;
     }
 
-    .follower-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(27,42,74,0.08);
-    }
+        .follower-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(27,42,74,0.08);
+        }
 
     .follower-avatar {
         width: 48px;
@@ -372,14 +377,16 @@
         color: var(--text-muted);
     }
 
-    /* ── Empty State ── */
     .dash-empty {
         text-align: center;
         padding: 4rem 2rem;
         grid-column: 1 / -1;
     }
 
-    .dash-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .dash-empty-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+    }
 
     .dash-empty h3 {
         font-size: 1.1rem;
@@ -394,17 +401,31 @@
     }
 
     @@media (max-width: 768px) {
-        .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
-        .dashboard-actions { align-items: flex-start; flex-direction: row; }
-        .dashboard-grid { grid-template-columns: 1fr; }
-        .followers-grid { grid-template-columns: repeat(2, 1fr); }
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.25rem;
+        }
+
+        .dashboard-actions {
+            align-items: flex-start;
+            flex-direction: row;
+        }
+
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .followers-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 </style>
 
 <!-- Profile Header -->
 <div class="dashboard-header">
     <div class="dashboard-avatar">
-        @(Model.User?.FirstName?.Substring(0,1).ToUpper())@(Model.User?.LastName?.Substring(0,1).ToUpper())
+        @(Model.User?.FirstName?.Substring(0, 1).ToUpper())@(Model.User?.LastName?.Substring(0, 1).ToUpper())
     </div>
 
     <div class="dashboard-info">
@@ -448,6 +469,11 @@
             <span class="dashboard-stat-num">@Model.SavedNotes.Count</span>
             <div class="dashboard-stat-label">Saved</div>
         </div>
+        <div class="dashboard-stat-divider"></div>
+        <div class="dashboard-stat">
+            <span class="dashboard-stat-num">@Model.MyGroups.Count</span>
+            <div class="dashboard-stat-label">Groups</div>
+        </div>
     </div>
 
     <div class="dashboard-actions">
@@ -474,6 +500,10 @@
         👥 Followers
         <span class="tab-count">@Model.Followers.Count</span>
     </button>
+    <button class="tab-btn" onclick="switchTab('groups', this)">
+        🎓 My Groups
+        <span class="tab-count">@Model.MyGroups.Count</span>
+    </button>
 </div>
 
 <!-- My Notes Tab -->
@@ -499,12 +529,8 @@
                     <div class="dash-card-footer">
                         <span class="dash-card-stat">❤️ @note.Likes</span>
                         <div class="dash-card-actions">
-                            <a class="dash-card-btn"
-                               asp-page="/Notes/Details"
-                               asp-route-id="@note.Id">View</a>
-                            <a class="dash-card-btn"
-                               asp-page="/Notes/Edit"
-                               asp-route-id="@note.Id">Edit</a>
+                            <a class="dash-card-btn" asp-page="/Notes/Details" asp-route-id="@note.Id">View</a>
+                            <a class="dash-card-btn" asp-page="/Notes/Edit" asp-route-id="@note.Id">Edit</a>
                             <form method="post" asp-page-handler="DeleteNote"
                                   onsubmit="return confirm('Delete this note?')"
                                   style="display:inline;">
@@ -542,9 +568,7 @@
                     <div class="dash-card-footer">
                         <span class="dash-card-stat">❤️ @note.Likes</span>
                         <div class="dash-card-actions">
-                            <a class="dash-card-btn"
-                               asp-page="/Notes/Details"
-                               asp-route-id="@note.Id">View</a>
+                            <a class="dash-card-btn" asp-page="/Notes/Details" asp-route-id="@note.Id">View</a>
                             <form method="post" asp-page-handler="UnsaveNote"
                                   onsubmit="return confirm('Remove from saved?')"
                                   style="display:inline;">
@@ -588,12 +612,8 @@
                         </div>
                     </div>
                     <div class="dash-card-actions" style="flex-direction:column;">
-                        <a class="dash-card-btn"
-                           asp-page="/Blogs/Details"
-                           asp-route-id="@blog.Id">View</a>
-                        <a class="dash-card-btn"
-                           asp-page="/Blogs/Edit"
-                           asp-route-id="@blog.Id">Edit</a>
+                        <a class="dash-card-btn" asp-page="/Blogs/Details" asp-route-id="@blog.Id">View</a>
+                        <a class="dash-card-btn" asp-page="/Blogs/Edit" asp-route-id="@blog.Id">Edit</a>
                         <form method="post" asp-page-handler="DeleteBlog"
                               onsubmit="return confirm('Delete this blog?')"
                               style="display:inline;">
@@ -624,7 +644,7 @@
             {
                 <div class="follower-card">
                     <div class="follower-avatar">
-                        @(follower.FirstName?.Substring(0,1).ToUpper())@(follower.LastName?.Substring(0,1).ToUpper())
+                        @(follower.FirstName?.Substring(0, 1).ToUpper())@(follower.LastName?.Substring(0, 1).ToUpper())
                     </div>
                     <div class="follower-name">@follower.FirstName @follower.LastName</div>
                     <div class="follower-nationality">@follower.Nationality</div>
@@ -634,13 +654,49 @@
     </div>
 </div>
 
+<!-- My Groups Tab -->
+<div class="tab-panel" id="tab-groups">
+    <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-bottom:1.25rem;">
+        <a class="btn-sb-primary" asp-action="Create" asp-controller="StudyGroups">+ New Group</a>
+        <a class="btn-sb-ghost" asp-action="Index" asp-controller="StudyGroups">Browse All Groups</a>
+    </div>
+    <div class="dashboard-grid">
+        @if (!Model.MyGroups.Any())
+        {
+            <div class="dash-empty">
+                <div class="dash-empty-icon">🎓</div>
+                <h3>No groups yet</h3>
+                <p>Join an existing group or create your own study space!</p>
+                <a class="btn-sb-primary" asp-action="Index" asp-controller="StudyGroups">Browse Groups</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var group in Model.MyGroups)
+            {
+                <div class="dash-note-card">
+                    <span class="dash-card-subject">@group.Subject</span>
+                    <h3 class="dash-card-title">@group.Name</h3>
+                    <p class="dash-card-excerpt">@group.Description</p>
+                    <div class="dash-card-footer">
+                        <span class="dash-card-stat">👥 @group.Members.Count members</span>
+                        <div class="dash-card-actions">
+                            <a class="dash-card-btn" asp-action="Details" asp-controller="StudyGroups" asp-route-id="@group.Id">View</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
 @section Scripts {
-<script>
-    function switchTab(name, btn) {
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + name).classList.add('active');
-        btn.classList.add('active');
-    }
-</script>
+    <script>
+        function switchTab(name, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
 }

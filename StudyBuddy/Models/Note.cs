@@ -33,9 +33,12 @@ namespace StudyBuddy.Models
         public ApplicationUser Creator { get; set; } = null!;
 
         public int Likes { get; set; }
-       
+
+        public int? StudyGroupId { get; set; }
+
+        [ForeignKey("StudyGroupId")]
+        public StudyGroup? StudyGroup { get; set; }
 
 
-        
     }
 }

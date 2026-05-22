@@ -34,5 +34,10 @@ namespace StudyBuddy.Models
 
         public ICollection<BlogTag> Tags { get; set; } = new List<BlogTag>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        public int? StudyGroupId { get; set; }
+
+        [ForeignKey("StudyGroupId")]
+        public StudyGroup? StudyGroup { get; set; }
     }
 }

@@ -1,0 +1,122 @@
+﻿@model StudyBuddy.ViewModels.CreateStudyGroupViewModel
+@{
+    ViewData["Title"] = "Create Group";
+}
+
+<style>
+    .form-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        max-width: 580px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--navy);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        background: var(--white);
+        transition: border-color 0.15s;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: var(--navy);
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+
+    .text-danger {
+        font-size: 0.8rem;
+        color: #dc3545;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-cancel {
+        padding: 0.65rem 1.5rem;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background: transparent;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .btn-cancel:hover {
+            border-color: var(--navy);
+            color: var(--navy);
+        }
+</style>
+
+<div class="sb-page-header">
+    <div>
+        <h1>Create Study Group</h1>
+        <p>Start a new space for collaborative learning</p>
+    </div>
+</div>
+
+<div class="form-card">
+    <form asp-action="Create" asp-controller="StudyGroups" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:1rem;"></div>
+
+        <div class="form-group">
+            <label asp-for="Name" class="form-label">Group name</label>
+            <input asp-for="Name" class="form-control" placeholder="e.g. Calculus Study Circle" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="What will this group focus on?"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Subject" class="form-label">Subject</label>
+            <select asp-for="Subject"
+                    class="form-control"
+                    asp-items="Html.GetEnumSelectList<StudyBuddy.Models.Subject>()">
+                <option value="">— choose a subject —</option>
+            </select>
+            <span asp-validation-for="Subject" class="text-danger"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-sb-primary">Create group</button>
+            <a asp-action="Index" asp-controller="StudyGroups" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>

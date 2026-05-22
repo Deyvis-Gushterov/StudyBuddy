@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Models;
+using StudyBuddy.Services.Implementations;
 using StudyBuddy.Services.Interfaces;
-using System.Security.Claims;
 using StudyBuddy.ViewModels;
+using System.Security.Claims;
 
 namespace StudyBuddy.Controllers
 {
@@ -13,12 +14,18 @@ namespace StudyBuddy.Controllers
     {
         private readonly IStudyGroupService studyGroupService;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly INoteService noteService;
+        private readonly IBlogService blogService;
 
         public StudyGroupsController(IStudyGroupService studygroupService,
-                                          UserManager<ApplicationUser> userManager)
+                                          UserManager<ApplicationUser> userManager,
+                                          INoteService noteService,
+                                          IBlogService blogService)
         {
             this.studyGroupService = studygroupService;
             this.userManager = userManager;
+            this.noteService = noteService;
+            this.blogService = blogService;
         }
         public async Task<IActionResult> Index()
         {
@@ -37,12 +44,21 @@ namespace StudyBuddy.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            var allNotes = await noteService.GetAllNotesAsync();
+            var allBlogs = await blogService.GetAllBlogsAsync();
+
             var viewModel = new StudyGroupDetailsViewModel
             {
                 Group = group,
                 IsMember = await studyGroupService.IsUserMemberAsync(group.Id, userId!),
-                IsCreator = group.CreatorId == userId
+                IsCreator = group.CreatorId == userId,
+                UserNotes = allNotes.Where(n => n.CreatorId == userId).ToList(),
+                UserBlogs = allBlogs.Where(b => b.AuthorId == userId).ToList(),
+                CurrentUserId = userId!
             };
+
+            
+            
 
             return View(viewModel);
         }
@@ -118,6 +134,44 @@ namespace StudyBuddy.Controllers
             return RedirectToAction("Details", new { id });
         }
 
-        
+        [HttpPost]
+        public async Task<IActionResult> AddNote(int id, int noteId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            await studyGroupService.AddNoteAsync(id, noteId, userId);
+            return RedirectToAction("Details", new { id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveNote(int id, int noteId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            await studyGroupService.RemoveNoteAsync(id, noteId, userId);
+            return RedirectToAction("Details", new { id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddBlog(int id, int blogId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            await studyGroupService.AddBlogAsync(id, blogId, userId);
+            return RedirectToAction("Details", new { id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveBlog(int id, int blogId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            await studyGroupService.RemoveBlogAsync(id, blogId, userId);
+            return RedirectToAction("Details", new { id });
+        }
     }
 }

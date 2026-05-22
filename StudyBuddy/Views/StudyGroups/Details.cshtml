@@ -1,0 +1,734 @@
+﻿@model StudyBuddy.ViewModels.StudyGroupDetailsViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Group.Name;
+}
+
+<style>
+    .group-hero {
+        background: var(--navy);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .group-hero::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(212,137,10,0.15);
+        }
+
+        .group-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: 30%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+        }
+
+    .group-hero-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .group-hero-subject {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .group-hero-title {
+        font-family: var(--font-heading);
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--white);
+        margin: 0 0 0.75rem;
+        line-height: 1.2;
+    }
+
+    .group-hero-desc {
+        color: rgba(255,255,255,0.7);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin: 0 0 1.25rem;
+        max-width: 600px;
+    }
+
+    .group-hero-stats {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-stat {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.6);
+    }
+
+        .hero-stat strong {
+            color: var(--white);
+        }
+
+    .group-hero-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        flex-shrink: 0;
+    }
+
+    .btn-join {
+        padding: 0.7rem 1.75rem;
+        background: var(--amber);
+        color: var(--white);
+        border: none;
+        border-radius: 10px;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+        .btn-join:hover {
+            background: #b8790a;
+        }
+
+    .btn-leave {
+        padding: 0.7rem 1.75rem;
+        background: transparent;
+        color: rgba(255,255,255,0.8);
+        border: 1.5px solid rgba(255,255,255,0.3);
+        border-radius: 10px;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+        .btn-leave:hover {
+            border-color: #dc3545;
+            color: #dc3545;
+            background: rgba(220,53,69,0.1);
+        }
+
+    .details-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .section-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .section-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .section-header h2 {
+            font-size: 1.05rem;
+            color: var(--navy);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    .section-count {
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+
+    .content-tabs {
+        display: flex;
+        gap: 0.25rem;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 1.25rem;
+    }
+
+    .content-tab-btn {
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        padding: 0.6rem 1rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .content-tab-btn:hover {
+            color: var(--navy);
+        }
+
+        .content-tab-btn.active {
+            color: var(--navy);
+            border-bottom-color: var(--navy);
+            font-weight: 600;
+        }
+
+    .content-panel {
+        display: none;
+    }
+
+        .content-panel.active {
+            display: block;
+        }
+
+    .resource-card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        transition: all 0.2s ease;
+        background: var(--white);
+    }
+
+        .resource-card:hover {
+            border-color: var(--navy);
+            box-shadow: 0 4px 16px rgba(27,42,74,0.08);
+            transform: translateY(-1px);
+        }
+
+        .resource-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .resource-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .resource-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .resource-subject {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.2rem;
+    }
+
+    .resource-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin: 0 0 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .resource-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    .resource-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        align-items: flex-end;
+        flex-shrink: 0;
+    }
+
+    .btn-view {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 6px;
+        border: 1.5px solid var(--navy);
+        background: transparent;
+        color: var(--navy);
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s;
+        white-space: nowrap;
+    }
+
+        .btn-view:hover {
+            background: var(--navy);
+            color: var(--white);
+            text-decoration: none;
+        }
+
+    .btn-remove {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+        border-radius: 6px;
+        border: 1px solid #dc3545;
+        background: transparent;
+        color: #dc3545;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+    }
+
+        .btn-remove:hover {
+            background: #fff5f5;
+        }
+
+    .add-form {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+
+        .add-form select {
+            flex: 1;
+            padding: 0.55rem 0.85rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            outline: none;
+            background: var(--white);
+            color: var(--text-dark);
+        }
+
+            .add-form select:focus {
+                border-color: var(--navy);
+            }
+
+    .members-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .member-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: background 0.15s;
+    }
+
+        .member-row:hover {
+            background: var(--cream);
+        }
+
+    .member-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--navy);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--amber);
+        flex-shrink: 0;
+    }
+
+    .member-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .member-joined {
+        font-size: 0.73rem;
+        color: var(--text-muted);
+    }
+
+    .badge-admin {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--amber);
+        background: #fff8e6;
+        border-radius: 20px;
+        padding: 1px 7px;
+        margin-left: 5px;
+    }
+
+    .rules-card {
+        background: linear-gradient(135deg, #1B2A4A 0%, #243659 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .rules-card h3 {
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            color: var(--white);
+            margin: 0 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    .rules-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+        .rules-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.5;
+        }
+
+    .rule-icon {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(212,137,10,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+        color: var(--amber);
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    .empty-state-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .error-msg {
+        background: #fff5f5;
+        border: 1px solid #fcc;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-bottom: 1.25rem;
+    }
+
+    @@media (max-width: 900px) {
+        .details-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .group-hero-title {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+
+@if (TempData["Error"] != null)
+{
+    <div class="error-msg">@TempData["Error"]</div>
+}
+
+<div class="group-hero">
+    <div class="group-hero-inner">
+        <div style="flex:1;">
+            <span class="group-hero-subject">@Model.Group.Subject</span>
+            <h1 class="group-hero-title">@Model.Group.Name</h1>
+            <p class="group-hero-desc">@Model.Group.Description</p>
+            <div class="group-hero-stats">
+                <div class="hero-stat">👥 <strong>@Model.Group.Members.Count</strong> members</div>
+                <div class="hero-stat">📝 <strong>@Model.Group.Notes.Count</strong> notes</div>
+                <div class="hero-stat">✍️ <strong>@Model.Group.Blogs.Count</strong> blogs</div>
+                <div class="hero-stat">📅 Created <strong>@Model.Group.CreatedAt.ToString("MMM dd, yyyy")</strong></div>
+            </div>
+        </div>
+
+        <div class="group-hero-actions">
+            @if (!Model.IsCreator)
+            {
+                if (Model.IsMember)
+                {
+                    <form asp-action="Leave" asp-controller="StudyGroups" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Group.Id" />
+                        <button type="submit" class="btn-leave">Leave group</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Join" asp-controller="StudyGroups" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Group.Id" />
+                        <button type="submit" class="btn-join">Join group</button>
+                    </form>
+                }
+            }
+            else
+            {
+                <span style="font-size:0.8rem; color:rgba(255,255,255,0.5); padding-top:0.5rem;">You own this group</span>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="details-layout">
+
+    <div>
+        <div class="section-card">
+            <div class="content-tabs">
+                <button class="content-tab-btn active" onclick="switchContentTab('notes', this)">
+                    📝 Notes <span class="section-count">@Model.Group.Notes.Count</span>
+                </button>
+                <button class="content-tab-btn" onclick="switchContentTab('blogs', this)">
+                    ✍️ Blogs <span class="section-count">@Model.Group.Blogs.Count</span>
+                </button>
+            </div>
+
+            <div class="content-panel active" id="content-notes">
+                @if (!Model.Group.Notes.Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        No notes shared yet. Be the first to add one!
+                    </div>
+                }
+                else
+                {
+                    @foreach (var note in Model.Group.Notes)
+                    {
+                        <div class="resource-card">
+                            <div class="resource-icon">📝</div>
+                            <div class="resource-content">
+                                <div class="resource-subject">@note.Subject</div>
+                                <div class="resource-title">@note.Topic</div>
+                                <div class="resource-meta">by @note.Creator?.FirstName @note.Creator?.LastName</div>
+                            </div>
+                            <div class="resource-actions">
+                                <a href="/Notes/Details/@note.Id" class="btn-view">View</a>
+                                @if (Model.IsCreator || note.CreatorId == Model.CurrentUserId)
+                                {
+                                    <form asp-action="RemoveNote" asp-controller="StudyGroups" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@Model.Group.Id" />
+                                        <input type="hidden" name="noteId" value="@note.Id" />
+                                        <button type="submit" class="btn-remove">Remove</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+
+                @if (Model.IsMember && Model.UserNotes.Any())
+                {
+                    <form asp-action="AddNote" asp-controller="StudyGroups" method="post" class="add-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Group.Id" />
+                        <select name="noteId">
+                            <option value="">— share one of your notes —</option>
+                            @foreach (var note in Model.UserNotes)
+                            {
+                                <option value="@note.Id">@note.Topic (@note.Subject)</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn-sb-primary">Share</button>
+                    </form>
+                }
+                else if (!Model.IsMember)
+                {
+                    <p style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-top:1rem;">Join the group to share notes.</p>
+                }
+            </div>
+
+            <div class="content-panel" id="content-blogs">
+                @if (!Model.Group.Blogs.Any())
+                {
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✍️</div>
+                        No blogs shared yet. Be the first to add one!
+                    </div>
+                }
+                else
+                {
+                    @foreach (var blog in Model.Group.Blogs)
+                    {
+                        <div class="resource-card">
+                            <div class="resource-icon">✍️</div>
+                            <div class="resource-content">
+                                <div class="resource-subject">Blog</div>
+                                <div class="resource-title">@blog.Title</div>
+                                <div class="resource-meta">by @blog.Author?.FirstName @blog.Author?.LastName</div>
+                            </div>
+                            <div class="resource-actions">
+                                <a href="/Blogs/Details/@blog.Id" class="btn-view">View</a>
+                                @if (Model.IsCreator || blog.AuthorId == Model.CurrentUserId)
+                                {
+                                    <form asp-action="RemoveBlog" asp-controller="StudyGroups" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@Model.Group.Id" />
+                                        <input type="hidden" name="blogId" value="@blog.Id" />
+                                        <button type="submit" class="btn-remove">Remove</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+
+                @if (Model.IsMember && Model.UserBlogs.Any())
+                {
+                    <form asp-action="AddBlog" asp-controller="StudyGroups" method="post" class="add-form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Group.Id" />
+                        <select name="blogId">
+                            <option value="">— share one of your blogs —</option>
+                            @foreach (var blog in Model.UserBlogs)
+                            {
+                                <option value="@blog.Id">@blog.Title</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn-sb-primary">Share</button>
+                    </form>
+                }
+                else if (!Model.IsMember)
+                {
+                    <p style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-top:1rem;">Join the group to share blogs.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="rules-card">
+            <h3>📋 Group Rules</h3>
+            <ul class="rules-list">
+                <li>
+                    <span class="rule-icon">1</span>
+                    Be respectful and kind to all members. Personal attacks or harassment will not be tolerated.
+                </li>
+                <li>
+                    <span class="rule-icon">2</span>
+                    Only share content relevant to the group subject. Off-topic material may be removed.
+                </li>
+                <li>
+                    <span class="rule-icon">3</span>
+                    No spam or duplicate content. Quality over quantity.
+                </li>
+                <li>
+                    <span class="rule-icon">4</span>
+                    Give credit where it is due. Do not share others work without attribution.
+                </li>
+                <li>
+                    <span class="rule-icon">5</span>
+                    Help each other learn. This is a collaborative space, not a competition.
+                </li>
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <h2>👥 Members</h2>
+                <span class="section-count">@Model.Group.Members.Count</span>
+            </div>
+            <div class="members-list">
+                @foreach (var member in Model.Group.Members)
+                {
+                    <div class="member-row">
+                        <div class="member-avatar">
+                            @(member.User?.FirstName?.Substring(0, 1).ToUpper())@(member.User?.LastName?.Substring(0, 1).ToUpper())
+                        </div>
+                        <div>
+                            <div class="member-name">
+                                @member.User?.FirstName @member.User?.LastName
+                                @if (member.Role == StudyBuddy.Models.Role.Admin)
+                                {
+                                    <span class="badge-admin">Admin</span>
+                                }
+                            </div>
+                            <div class="member-joined">Joined @member.JoinedAt.ToString("MMM dd, yyyy")</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function switchContentTab(name, btn) {
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.content-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('content-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+    </script>
+}

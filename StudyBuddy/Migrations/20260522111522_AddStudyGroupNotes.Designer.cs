@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudyBuddy.Data;
 
@@ -11,9 +12,11 @@ using StudyBuddy.Data;
 namespace StudyBuddy.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260522111522_AddStudyGroupNotes")]
+    partial class AddStudyGroupNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,9 +317,6 @@ namespace StudyBuddy.Migrations
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("StudyGroupId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Summary")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -337,8 +337,6 @@ namespace StudyBuddy.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("StudyGroupId");
 
                     b.ToTable("Blogs");
                 });
@@ -818,14 +816,7 @@ namespace StudyBuddy.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("StudyBuddy.Models.StudyGroup", "StudyGroup")
-                        .WithMany("Blogs")
-                        .HasForeignKey("StudyGroupId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Author");
-
-                    b.Navigation("StudyGroup");
                 });
 
             modelBuilder.Entity("StudyBuddy.Models.Comment", b =>
@@ -1029,8 +1020,6 @@ namespace StudyBuddy.Migrations
 
             modelBuilder.Entity("StudyBuddy.Models.StudyGroup", b =>
                 {
-                    b.Navigation("Blogs");
-
                     b.Navigation("Members");
 
                     b.Navigation("Notes");

@@ -33,9 +33,15 @@ namespace StudyBuddy.Services.Implementations
         public async Task<StudyGroup?> GetByIdAsync(int id)
         {
             return await context.StudyGroups
-                .Include(g => g.Creator)
-                .Where(g => g.Id == id)
-                .FirstOrDefaultAsync();
+     .Include(g => g.Creator)
+     .Include(g => g.Members)
+         .ThenInclude(m => m.User)
+     .Include(g => g.Notes)
+         .ThenInclude(n => n.Creator)
+     .Include(g => g.Blogs)
+         .ThenInclude(b => b.Author)
+     .Where(g => g.Id == id)
+     .FirstOrDefaultAsync();
         }
         public async Task<List<StudyGroup>> GetUserGroupsAsync(string userId)
         {
@@ -112,5 +118,107 @@ namespace StudyBuddy.Services.Implementations
                 .AnyAsync(m => m.StudyGroupId == groupId && m.UserId == userId);
         }
 
+        public async Task<bool> AddNoteAsync(int groupId, int noteId, string userId)
+        {
+            var group = await context.StudyGroups
+                .Include(g => g.Members)
+                .Where(g => g.Id == groupId)
+                .FirstOrDefaultAsync();
+
+            var user = await context.StudyGroupMembers
+                .Where(u => u.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if(group == null || user == null) return false;
+
+            if (!group.Members.Contains(user)) return false;
+            
+            var note = await context.Notes
+                .Where(n => n.Id == noteId)
+                .FirstOrDefaultAsync();
+
+            if(note == null) return false;
+
+            note.StudyGroupId = groupId;
+            await context.SaveChangesAsync();
+            return true;
+            
+        }
+        public async Task<bool> RemoveNoteAsync(int groupId, int noteId, string userId)
+        {
+            var group = await context.StudyGroups
+                .Include(g => g.Members)
+                .Where(g => g.Id == groupId)
+                .FirstOrDefaultAsync();
+
+            var user = await context.StudyGroupMembers
+                .Where(u => u.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (group == null || user == null) return false;
+
+            if (!group.Members.Contains(user)) return false;
+
+            var note = await context.Notes
+                .Where(n => n.Id == noteId)
+                .FirstOrDefaultAsync();
+
+            if (note == null) return false;
+
+            note.StudyGroupId = null;
+            await context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> AddBlogAsync(int groupId, int blogId, string userId)
+        {
+            var group = await context.StudyGroups
+                .Include(g => g.Members)
+                .Where(g => g.Id == groupId)
+                .FirstOrDefaultAsync();
+
+            var user = await context.StudyGroupMembers
+                .Where(u => u.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (group == null || user == null) return false;
+
+            if (!group.Members.Contains(user)) return false;
+
+            var blog = await context.Blogs
+                .Where(n => n.Id == blogId)
+                .FirstOrDefaultAsync();
+
+            if (blog == null) return false;
+
+            blog.StudyGroupId = groupId;
+            await context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> RemoveBlogAsync(int groupId, int blogId, string userId)
+        {
+            var group = await context.StudyGroups
+                .Include(g => g.Members)
+                .Where(g => g.Id == groupId)
+                .FirstOrDefaultAsync();
+
+            var user = await context.StudyGroupMembers
+                .Where(u => u.UserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (group == null || user == null) return false;
+
+            if (!group.Members.Contains(user)) return false;
+
+            var blog = await context.Blogs
+                .Where(n => n.Id == blogId)
+                .FirstOrDefaultAsync();
+
+            if (blog == null) return false;
+
+            blog.StudyGroupId = null;
+            await context.SaveChangesAsync();
+            return true;
+        }
     }
 }

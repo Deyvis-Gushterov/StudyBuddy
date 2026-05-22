@@ -1,0 +1,231 @@
+﻿@model List<StudyBuddy.Models.StudyGroup>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Study Groups";
+}
+<style>
+    .groups-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .groups-search {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        flex: 1;
+        max-width: 380px;
+        transition: border-color 0.15s;
+    }
+
+        .groups-search:focus-within {
+            border-color: var(--navy);
+        }
+
+        .groups-search svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .groups-search input {
+            border: none;
+            outline: none;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            background: transparent;
+            width: 100%;
+        }
+
+    .groups-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .group-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+        .group-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--amber);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+            transform-origin: left;
+        }
+
+        .group-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(27,42,74,0.1);
+            border-color: transparent;
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .group-card:hover::before {
+                transform: scaleX(1);
+            }
+
+    .group-subject {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .group-name {
+        font-family: var(--font-heading);
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin: 0;
+    }
+
+    .group-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .group-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+    }
+
+    .group-meta {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .member-count {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        grid-column: 1 / -1;
+    }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+</style>
+
+<div class="sb-page-header">
+    <div>
+        <h1>Study Groups</h1>
+        <p>Join a group or create your own study space</p>
+    </div>
+    <a class="btn-sb-primary" asp-action="Create" asp-controller="StudyGroups">+ New Group</a>
+</div>
+
+<div class="groups-toolbar">
+    <div class="groups-search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search groups by name or subject..." />
+    </div>
+</div>
+
+<div class="groups-grid" id="groupsGrid">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div style="font-size:3rem; margin-bottom:1rem;">👥</div>
+            <h3>No groups yet</h3>
+            <p>Be the first to create a study group!</p>
+            <a class="btn-sb-primary" asp-action="Create" asp-controller="StudyGroups">Create a group</a>
+        </div>
+    }
+    else
+    {
+        @foreach (var group in Model)
+        {
+            <a class="group-card" asp-action="Details" asp-controller="StudyGroups" asp-route-id="@group.Id" data-name="@group.Name.ToLower()" data-subject="@group.Subject.ToString().ToLower()">
+                <span class="group-subject">@group.Subject</span>
+                <h3 class="group-name">@group.Name</h3>
+                <p class="group-desc">@group.Description</p>
+                <div class="group-footer">
+                    <span class="group-meta">by @group.Creator.FirstName @group.Creator.LastName</span>
+                    <span class="member-count">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        @group.Members.Count
+                    </span>
+                </div>
+            </a>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.group-card[data-name]');
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            cards.forEach(card => {
+                const name = card.dataset.name || '';
+                const subject = card.dataset.subject || '';
+                card.style.display = (!query || name.includes(query) || subject.includes(query)) ? 'flex' : 'none';
+            });
+        });
+    </script>
+}

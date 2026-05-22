@@ -24,6 +24,8 @@ namespace StudyBuddy.Models
         [ForeignKey("CreatorId")]
         public ApplicationUser Creator { get; set; } = null!;
         public ICollection<StudyGroupMember> Members { get; set; } = new List<StudyGroupMember>();
+        public ICollection<Note> Notes { get; set; } = new List<Note>();
+        public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
     }
 
     public enum Subject

@@ -24,6 +24,7 @@ builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 builder.Services.AddHttpClient<IAiService, AiService>();
 builder.Services.AddScoped<IAiService, AiService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 
@@ -66,7 +67,7 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
@@ -76,6 +77,9 @@ app.UseAuthorization();
 app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapStaticAssets();
 app.MapRazorPages()

@@ -11,5 +11,7 @@
         Task<string> GetWritingSuggestionsAsync(string blogContent);
 
         Task<List<string>> SuggestTagsAsync(string blogContent);
+
+        Task<string> ChatAsync(List<(string role, string content)> history, string userMessage);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StudyBuddy.Common;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 
 namespace StudyBuddy.Models

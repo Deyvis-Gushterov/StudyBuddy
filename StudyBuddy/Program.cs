@@ -23,6 +23,7 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
 builder.Services.AddHttpClient<IAiService, AiService>();
 builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddScoped<IDiscoverService, DiscoverService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
 builder.Services.AddControllersWithViews();

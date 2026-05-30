@@ -1,0 +1,431 @@
+﻿@model StudyBuddy.ViewModels.DiscoverViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Discover";
+}
+
+<style>
+    .discover-hero {
+        background: var(--navy);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .discover-hero::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(212,137,10,0.12);
+        }
+
+        .discover-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -70px;
+            left: 25%;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+        }
+
+    .discover-hero-inner {
+        position: relative;
+        z-index: 1;
+    }
+
+    .discover-hero h1 {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        color: var(--white);
+        margin: 0 0 0.5rem;
+    }
+
+    .discover-hero p {
+        color: rgba(255,255,255,0.65);
+        font-size: 0.95rem;
+        margin: 0 0 1.25rem;
+    }
+
+    .top-subject-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(212,137,10,0.2);
+        border: 1px solid rgba(212,137,10,0.4);
+        color: var(--amber);
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+    }
+
+    .discover-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .section-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.75rem;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+        .section-header h2 {
+            font-size: 1.05rem;
+            color: var(--navy);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+    .section-count {
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+
+    /* User Cards */
+    .user-card {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        padding: 0.75rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease;
+        background: var(--white);
+    }
+
+        .user-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .user-card:hover {
+            border-color: var(--navy);
+            box-shadow: 0 4px 14px rgba(27,42,74,0.08);
+            transform: translateY(-1px);
+        }
+
+    .user-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--navy);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--amber);
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .user-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin: 0 0 0.15rem;
+    }
+
+    .user-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    .btn-follow {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 4px 14px;
+        border-radius: 6px;
+        border: 1.5px solid var(--navy);
+        background: transparent;
+        color: var(--navy);
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+        .btn-follow:hover {
+            background: var(--navy);
+            color: var(--white);
+            text-decoration: none;
+        }
+
+    /* Group Cards */
+    .group-card {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 1.1rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: inherit;
+        background: var(--white);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .group-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--amber);
+            transform: scaleY(0);
+            transition: transform 0.2s ease;
+            transform-origin: bottom;
+        }
+
+        .group-card:hover {
+            border-color: var(--navy);
+            box-shadow: 0 4px 14px rgba(27,42,74,0.08);
+            transform: translateY(-1px);
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .group-card:hover::before {
+                transform: scaleY(1);
+            }
+
+        .group-card:last-child {
+            margin-bottom: 0;
+        }
+
+    .group-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--cream);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .group-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .group-subject-badge {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--amber);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.2rem;
+    }
+
+    .group-name {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--navy);
+        margin: 0 0 0.2rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .group-meta {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+    }
+
+    .btn-join-small {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 4px 14px;
+        border-radius: 6px;
+        border: 1.5px solid var(--amber);
+        background: transparent;
+        color: var(--amber);
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        align-self: center;
+        transition: all 0.15s;
+    }
+
+        .btn-join-small:hover {
+            background: var(--amber);
+            color: var(--white);
+        }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    .empty-state-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1rem;
+        color: var(--navy);
+        margin-bottom: 0.4rem;
+    }
+
+    @@media (max-width: 768px) {
+        .discover-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .discover-hero h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<!-- Hero -->
+<div class="discover-hero">
+    <div class="discover-hero-inner">
+        <h1>Discover</h1>
+        @if (!string.IsNullOrEmpty(Model.TopSubject))
+        {
+            <p>Based on your activity, we think you'll love these people and groups.</p>
+            <div class="top-subject-badge">
+                🎯 Your top interest: @Model.TopSubject
+            </div>
+        }
+        else
+        {
+            <p>Start creating notes, joining groups, and saving content to get personalized suggestions.</p>
+        }
+    </div>
+</div>
+
+@if (string.IsNullOrEmpty(Model.TopSubject))
+{
+    <div class="section-card" style="text-align:center; padding:4rem 2rem;">
+        <div style="font-size:3rem; margin-bottom:1rem;">🔍</div>
+        <h2 style="font-size:1.25rem; margin-bottom:0.5rem;">No suggestions yet</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem;">
+            Create some notes, join a group, or save content you like — we'll find people and groups that match your interests.
+        </p>
+        <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap;">
+            <a href="/Notes/Create" class="btn-sb-primary">Create a Note</a>
+            <a href="/StudyGroups" class="btn-sb-ghost">Browse Groups</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="discover-grid">
+
+        <!-- Suggested Users -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>👤 People you might know</h2>
+                <span class="section-count">@Model.SuggestedUsers.Count</span>
+            </div>
+
+            @if (!Model.SuggestedUsers.Any())
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">👤</div>
+                    <h3>No suggestions yet</h3>
+                    More people will appear as the community grows.
+                </div>
+            }
+            else
+            {
+                @foreach (var user in Model.SuggestedUsers)
+                {
+                    <div class="user-card">
+                        <div class="user-avatar">
+                            @(user.FirstName?.Substring(0, 1).ToUpper())@(user.LastName?.Substring(0, 1).ToUpper())
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">@user.FirstName @user.LastName</div>
+                            <div class="user-meta">
+                                @if (!string.IsNullOrEmpty(user.Nationality))
+                                {
+                                    <span>🌍 @user.Nationality</span>
+                                }
+                            </div>
+                        </div>
+                        <a href="/Profile?userId=@user.Id" class="btn-follow">View</a>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Suggested Groups -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>🎓 Groups for you</h2>
+                <span class="section-count">@Model.SuggestedGroups.Count</span>
+            </div>
+
+            @if (!Model.SuggestedGroups.Any())
+            {
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎓</div>
+                    <h3>No groups found</h3>
+                    No groups in your top subject yet — why not create one?
+                    <br /><br />
+                    <a href="/StudyGroups/Create" class="btn-sb-primary">Create a Group</a>
+                </div>
+            }
+            else
+            {
+                @foreach (var group in Model.SuggestedGroups)
+                {
+                    <a href="/StudyGroups/Details/@group.Id" class="group-card">
+                        <div class="group-icon">🎓</div>
+                        <div class="group-info">
+                            <div class="group-subject-badge">@group.Subject</div>
+                            <div class="group-name">@group.Name</div>
+                            <div class="group-meta">👥 @group.Members.Count member(s)</div>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+
+    </div>
+}

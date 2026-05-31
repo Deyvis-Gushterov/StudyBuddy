@@ -12,7 +12,8 @@ namespace StudyBuddy.Common
         public const int MaxTopicLength = 100;
         public const int MinExplanationLength = 20;
         public const int MaxExplanationLength = 200;
-        public const int MinNoteLength = 200;
+        public const int MinNoteLength = 10;
+        public const int MaxNoteLength = 10000;
 
         //Blog
         public const int MinBlogTitleLength = 3;

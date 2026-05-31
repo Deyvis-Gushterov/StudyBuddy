@@ -7,6 +7,7 @@ namespace StudyBuddy.Services.Interfaces
         // Feed
         Task<List<Post>> GetFeedAsync(List<string> followingIds, int count = 20);
         Task<List<Post>> GetAllPostsAsync();
+        Task<List <Post>> GetByTagAsync(PostTag tag);
 
         // CRUD
         Task<Post?> GetPostByIdAsync(int id);

@@ -17,6 +17,24 @@ namespace StudyBuddy.Services.Implementations
             this.notificationService = notificationService;
         }
 
+        public async Task<List<Post>> GetByTagAsync(PostTag tag)
+        {
+            var posts = await context.Posts
+                .Where(p => p.Tags.Any(t => t.Name == tag.Name))
+                .Include(p => p.Author)
+                .Include(p => p.Comments)
+                .ThenInclude(c => c.Author)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+
+            if (!posts.Any())
+            {
+                return new List<Post>();
+            }
+
+            return posts;
+        }
+
         public async Task<List<Post>> GetFeedAsync(List<string> followingIds, int count = 20)
         {
             return await context.Posts

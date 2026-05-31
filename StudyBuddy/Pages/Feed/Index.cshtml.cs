@@ -17,6 +17,8 @@ namespace StudyBuddy.Pages.Feed
         private readonly IApplicationUserService _userService;
         private readonly IWebHostEnvironment _env;
         private readonly ICommentService _commentService;
+        public string? Tag { get; set; }
+        public string? Search { get; set; }
 
         public IndexModel(IPostService postService,
                           UserManager<ApplicationUser> userManager,
@@ -34,7 +36,7 @@ namespace StudyBuddy.Pages.Feed
         public List<Post> Posts { get; set; } = new();
         public List<ApplicationUser> SuggestedUsers { get; set; } = new();
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string? tag, string? search)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToPage("/Account/Login");
@@ -49,7 +51,24 @@ namespace StudyBuddy.Pages.Feed
                 .Take(5)
                 .ToList();
 
-            Posts = await _postService.GetFeedAsync(followingIds);
+            if (!string.IsNullOrEmpty(search))
+            {
+                Search = search;
+                var allPosts = await _postService.GetAllPostsAsync();
+                Posts = allPosts
+                    .Where(p => p.Content.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                p.Tags.Any(t => t.Name.Contains(search, StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
+            }
+            else if (!string.IsNullOrEmpty(tag))
+            {
+                Tag = tag;
+                Posts = await _postService.GetByTagAsync(new PostTag { Name = tag });
+            }
+            else
+            {
+                Posts = await _postService.GetFeedAsync(followingIds);
+            }
 
             return Page();
         }
@@ -83,12 +102,13 @@ namespace StudyBuddy.Pages.Feed
             }
 
             // Extract hashtags from content
-            var tags = string.Empty;
+            var tags = new List<PostTag>();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 var matches = Regex.Matches(content, @"#(\w+)");
                 var tagList = matches.Select(m => m.Groups[1].Value.ToLower()).Distinct().ToList();
-                tags = string.Join(",", tagList);
+                foreach (var tag in tagList)
+                    tags.Add(new PostTag { Name = tag });
             }
 
             var post = new Post

@@ -2,6 +2,8 @@
 @model StudyBuddy.Pages.Feed.IndexModel
 @using System.Security.Claims
 @using System.Text.RegularExpressions
+@using System.Linq
+@using StudyBuddy.Models
 @{
     ViewData["Title"] = "Feed";
     var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -24,7 +26,7 @@
         if (string.IsNullOrEmpty(content)) return "";
         // Linkify hashtags
         return Regex.Replace(content, @"#(\w+)", m =>
-            $"<a href='/Feed/Tag?tag={m.Groups[1].Value.ToLower()}' class='post-hashtag'>#{m.Groups[1].Value}</a>");
+            $"<a href='/Feed/Index?tag={m.Groups[1].Value.ToLower()}' class='post-hashtag'>#{m.Groups[1].Value}</a>");
     }
 }
 
@@ -633,6 +635,100 @@
             transform: scale(1.05);
         }
 
+    /* ── Search bar ── */
+    .feed-search-wrap {
+        position: relative;
+        margin-bottom: 1rem;
+        animation: fadeInUp 0.3s ease both;
+    }
+
+    .feed-search-input {
+        width: 100%;
+        padding: 0.7rem 1rem 0.7rem 2.75rem;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        background: var(--white);
+        color: var(--text-dark);
+        outline: none;
+        transition: all 0.2s ease;
+        box-shadow: var(--card-shadow);
+    }
+
+        .feed-search-input:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(27,42,74,0.08);
+        }
+
+        .feed-search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+    .feed-search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        pointer-events: none;
+        transition: transform 0.3s ease;
+    }
+
+    .feed-search-wrap:focus-within .feed-search-icon {
+        transform: translateY(-50%) scale(1.2) rotate(-10deg);
+    }
+
+    .feed-search-clear {
+        position: absolute;
+        right: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 0.9rem;
+        padding: 0.2rem;
+        border-radius: 50%;
+        transition: all 0.15s;
+        display: none;
+    }
+
+        .feed-search-clear:hover {
+            color: var(--navy);
+            background: var(--cream);
+        }
+
+    .feed-search-banner {
+        background: #EEF2FF;
+        border: 1px solid #C7D2FE;
+        border-radius: 10px;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        animation: fadeInUp 0.2s ease both;
+    }
+
+        .feed-search-banner span {
+            font-weight: 600;
+            color: #3730A3;
+            font-size: 0.875rem;
+        }
+
+        .feed-search-banner a {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+            .feed-search-banner a:hover {
+                color: var(--navy);
+            }
+
+
     @@keyframes fadeInUp {
         from {
             opacity: 0;
@@ -713,7 +809,44 @@
 
 <div class="feed-layout">
     <div>
+        <!-- Search bar -->
+        <div class="feed-search-wrap">
+            <span class="feed-search-icon">🔍</span>
+            <form method="get" id="searchForm">
+                <input class="feed-search-input"
+                       type="text"
+                       name="search"
+                       id="searchInput"
+                       value="@Model.Search"
+                       placeholder="Search posts by content or #hashtag..."
+                       autocomplete="off" />
+                <button type="button" class="feed-search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+            </form>
+        </div>
+
+        @if (Model.Search != null)
+        {
+            <div class="feed-search-banner">
+                <span>🔎 Results for "@Model.Search"</span>
+                <a href="/Feed/Index">✕ Clear search</a>
+            </div>
+        }
+
         <!-- Composer -->
+        @if (Model.Tag != null)
+        {
+            <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:10px;
+                padding:0.75rem 1.25rem; margin-bottom:1rem; display:flex;
+                align-items:center; justify-content:space-between;">
+                <span style="font-weight:600; color:#92400E;">
+                    Showing posts tagged <span style="color:var(--amber);">#@Model.Tag</span>
+                </span>
+                <a href="/Feed/Index" style="font-size:0.82rem; color:var(--text-muted);">
+                    ✕ Clear filter
+                </a>
+            </div>
+        }
+
         <div class="composer-card">
             <form method="post" asp-page-handler="Create" id="composerForm"
                   enctype="multipart/form-data">
@@ -770,8 +903,11 @@
                     var timeAgo = GetTimeAgo(post.CreatedAt);
                     var isOwner = post.AuthorId == currentUserId;
                     var commentCount = post.Comments?.Count ?? 0;
-                    var tags = (post.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var tags = new List<PostTag>();
 
+                    foreach (var tag in post.Tags)
+                        tags.Add(tag);
+                   
                     <div class="post-card">
                         <div class="post-card-inner">
                             <div class="post-header">
@@ -796,7 +932,7 @@
                                 <div class="post-tags">
                                     @foreach (var tag in tags)
                                     {
-                                        <a class="post-tag" href="/Feed/Tag?tag=@tag">#@tag</a>
+                                        <a class="post-tag" href="/Feed/Index?tag=@tag.Name">#@tag.Name</a>
                                     }
                                 </div>
                             }
@@ -982,6 +1118,33 @@
         function toggleComments(postId) {
             const section = document.getElementById(`comments-${postId}`);
             if (section) section.classList.toggle('open');
+        }
+
+                // Search bar
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.getElementById('searchClear');
+
+        if (searchInput) {
+            const updateClear = () => {
+                searchClear.style.display = searchInput.value ? 'block' : 'none';
+            };
+            updateClear();
+            searchInput.addEventListener('input', updateClear);
+
+            // Auto-submit after user stops typing
+            let searchTimer;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                if (searchInput.value.length > 2 || searchInput.value.length === 0) {
+                    searchTimer = setTimeout(() => {
+                        document.getElementById('searchForm').submit();
+                    }, 600);
+                }
+            });
+        }
+
+        function clearSearch() {
+            window.location.href = '/Feed/Index';
         }
 
         // Post loading state

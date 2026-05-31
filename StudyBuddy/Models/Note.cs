@@ -18,7 +18,8 @@ namespace StudyBuddy.Models
         public string BriefExplanation { get; set; } = null!;
 
         [Required]
-        [MinLength(ValidationConstants.MinExplanationLength)]
+        [MinLength(ValidationConstants.MinNoteLength)]
+        [MaxLength(ValidationConstants.MaxNoteLength)]
         public string Content { get; set; } = null!;
         [Required]
         public string Subject { get; set; } = null!;

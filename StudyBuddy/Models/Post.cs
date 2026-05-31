@@ -20,7 +20,7 @@ namespace StudyBuddy.Models
 
         public string? ImageUrl { get; set; }
 
-        public string? Tags { get; set; }
+        public ICollection<PostTag> Tags { get; set; } = new List<PostTag>();
 
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
     }

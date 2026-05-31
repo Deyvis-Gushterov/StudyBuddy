@@ -20,6 +20,7 @@ namespace StudyBuddy.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<StudyGroup> StudyGroups { get; set; }
         public DbSet<StudyGroupMember> StudyGroupMembers { get; set; }
+        public DbSet<PostTag> PostTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -140,6 +141,13 @@ namespace StudyBuddy.Data
                 .HasForeignKey(n => n.AuthorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<PostTag>()
+                .ToTable("PostTag")
+                .HasOne(t => t.Post)
+                .WithMany(p => p.Tags)
+                .HasForeignKey(t => t.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             //StudyGroup
             builder.Entity<StudyGroup>()
                 .HasOne(g => g.Creator)
@@ -176,7 +184,9 @@ namespace StudyBuddy.Data
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-     
+   
+
+
         }
     }
 }

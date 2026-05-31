@@ -82,4 +82,3 @@ cd StudyBuddy
 
 **Deyvis Gushterov**
 - GitHub: [@Deyvis-Gushterov](https://github.com/Deyvis-Gushterov)
-- Portfolio: [young-journalistt.vercel.app](https://young-journalistt.vercel.app)

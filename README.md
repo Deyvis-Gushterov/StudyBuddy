@@ -202,6 +202,11 @@ dotnet run
 *Coming soon*
 
 ---
+<img width="2552" height="1288" alt="Screenshot 2026-06-05 234453" src="https://github.com/user-attachments/assets/e2bbb302-e589-4ab8-aae1-167f512be1db" />
+<img width="2553" height="1210" alt="Screenshot 2026-06-05 234526" src="https://github.com/user-attachments/assets/5c8b3f93-73df-4f55-8e88-76d31e7c1be8" />
+<img width="2539" height="1305" alt="Screenshot 2026-06-05 234541" src="https://github.com/user-attachments/assets/bf8ac84c-b4b8-4c8a-9aff-ab70a6259987" />
+
+
 
 ## 👤 Author
 

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:StudyBuddy.Mobile.ViewModels"
+             x:Class="StudyBuddy.Mobile.Views.LoginPage"
+             Title="Sign In">
+
+    <ContentPage.BindingContext>
+        <vm:LoginViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32" Spacing="16" VerticalOptions="Center">
+
+            <Label Text="StudyBuddy" FontSize="32" FontAttributes="Bold"
+                   HorizontalOptions="Center" TextColor="#6C63FF" />
+            <Label Text="Sign in to your account" FontSize="14"
+                   HorizontalOptions="Center" TextColor="Gray" Margin="0,0,0,16"/>
+
+            <Entry Placeholder="Email" Text="{Binding Email}"
+                   Keyboard="Email" AutomationId="EmailEntry"/>
+
+            <Entry Placeholder="Password" Text="{Binding Password}"
+                   IsPassword="True" AutomationId="PasswordEntry"/>
+
+            <Label Text="{Binding ErrorMessage}" TextColor="Red"
+                   IsVisible="{Binding ErrorMessage, Converter={x:StaticResource StringToBoolConverter}}"
+                   FontSize="13"/>
+
+            <Button Text="Sign In" Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={x:StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="#6C63FF" TextColor="White"
+                    CornerRadius="10" HeightRequest="48" Margin="0,8,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="#6C63FF" HorizontalOptions="Center"/>
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                <Label Text="Don't have an account?" TextColor="Gray" FontSize="13"/>
+                <Label Text="Register" TextColor="#6C63FF" FontSize="13">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToRegisterCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

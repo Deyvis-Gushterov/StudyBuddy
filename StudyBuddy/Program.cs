@@ -27,6 +27,8 @@ builder.Services.AddScoped<IDiscoverService, DiscoverService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IStudyGroupService, StudyGroupService>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 builder.Services.AddRazorPages();
@@ -34,6 +36,8 @@ builder.Services.AddRazorPages();
 
 
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -67,7 +71,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 

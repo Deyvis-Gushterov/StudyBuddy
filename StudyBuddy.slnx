@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="ConsoleApp1/ConsoleApp1/StudyBuddyBot.csproj" />
+  <Project Path="StudyBuddy.Mobile/StudyBuddy.Mobile.csproj" Id="27f655e0-e515-4f05-92f3-338c4cf60fce" />
   <Project Path="StudyBuddy/StudyBuddy.csproj" />
 </Solution>

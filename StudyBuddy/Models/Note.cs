@@ -25,7 +25,7 @@ namespace StudyBuddy.Models
         public string Subject { get; set; } = null!;
 
 
-        public DateTime DateOfCreation { get; set; } = DateTime.Now;
+        public DateTime DateOfCreation { get; set; } = DateTime.UtcNow;
 
         [Required]
         public string CreatorId { get; set; } = null!;

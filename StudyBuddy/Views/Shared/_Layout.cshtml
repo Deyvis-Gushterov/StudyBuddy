@@ -513,6 +513,64 @@
         text-align: center;
         }
         }
+
+        .sb-hamburger {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        }
+
+        .sb-hamburger span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--navy);
+        border-radius: 2px;
+        transition: all 0.2s ease;
+        }
+
+        .sb-mobile-menu {
+        display: none;
+        flex-direction: column;
+        background: var(--white);
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem 1.5rem;
+        position: sticky;
+        top: 64px;
+        z-index: 99;
+        }
+
+        .sb-mobile-menu a {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border);
+        transition: color 0.15s;
+        }
+
+        .sb-mobile-menu a:last-child {
+        border-bottom: none;
+        }
+
+        .sb-mobile-menu a:hover {
+        color: var(--navy);
+        }
+
+        .sb-mobile-menu.open {
+        display: flex;
+        }
+
+        @@media (max-width: 768px) {
+        .sb-hamburger {
+        display: flex;
+        }
+        }
     </style>
 </head>
 <body>
@@ -529,6 +587,7 @@
         });
     </script>
 
+    <!-- Navbar -->
     <!-- Navbar -->
     <nav class="sb-navbar">
         <a class="sb-logo" href="/">
@@ -578,6 +637,11 @@
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn-sb-ghost">Sign out</button>
                 </form>
+
+                <!-- Hamburger -->
+                <button class="sb-hamburger" id="sbHamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         }
         else
@@ -592,6 +656,24 @@
             </div>
         }
     </nav>
+
+    <!-- Mobile Menu -->
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <div class="sb-mobile-menu" id="sbMobileMenu">
+            <a href="/Feed">Feed</a>
+            <a href="/Notes">Notes</a>
+            <a href="/Blogs">Blogs</a>
+            <a href="/Dashboard">Dashboard</a>
+            <a href="/StudyGroups">Groups</a>
+            <a href="/Discover">Discover</a>
+            <a href="/Profile?userId=@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value">Profile</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a href="/Admin">Admin</a>
+            }
+        </div>
+    }
 
     <!-- Main Content -->
     <main class="sb-main">
@@ -670,6 +752,16 @@
         }, 4000);
         }
         })();
+    </script>
+
+    <script>
+        const hamburger = document.getElementById('sbHamburger');
+        const mobileMenu = document.getElementById('sbMobileMenu');
+        if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', () => {
+        mobileMenu.classList.toggle('open');
+        });
+        }
     </script>
 
 </body>

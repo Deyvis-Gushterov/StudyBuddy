@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Data;
@@ -5,6 +6,7 @@ using StudyBuddy.Hubs;
 using StudyBuddy.Models;
 using StudyBuddy.Services.Implementations;
 using StudyBuddy.Services.Interfaces;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<ApplicationDbContext>();
 
 builder.Services.AddScoped<INoteService, NoteService>();
 builder.Services.AddScoped<IPostService, PostService>();
@@ -32,6 +36,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+
 
 builder.Services.AddRazorPages();
 

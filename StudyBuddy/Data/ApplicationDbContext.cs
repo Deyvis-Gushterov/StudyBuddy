@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using StudyBuddy.Models;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 
 namespace StudyBuddy.Data
 {
-    public class ApplicationDbContext: IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IDataProtectionKeyContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogTag> BlogTags { get; set; }
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<Note> Notes { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Reply> Replies { get; set; }

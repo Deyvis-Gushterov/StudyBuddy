@@ -9,8 +9,10 @@ using StudyBuddy.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false).AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 

@@ -38,9 +38,18 @@ builder.Services.AddRazorPages();
 
 
 var app = builder.Build();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
+// Automatically apply migrations at startup on Render
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await context.Database.MigrateAsync();
+}
+
+// Seed Identity Roles safely now that the database structure exists
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider
@@ -54,7 +63,6 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
     }
 }
-
 
 app.UseStatusCodePagesWithReExecute("/NotFound");
 

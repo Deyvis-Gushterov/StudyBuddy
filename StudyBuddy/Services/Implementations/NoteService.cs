@@ -38,9 +38,16 @@ namespace StudyBuddy.Services.Implementations
                 return null;
             }
 
-            context.Notes.Add(note);
-            await context.SaveChangesAsync();
-            return note;
+            try
+            {
+                context.Notes.Add(note);
+                await context.SaveChangesAsync();
+                return note;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to create note: {ex.Message} | Inner: {ex.InnerException?.Message}", ex);
+            }
         }
 
         public async Task<Note> UpdateNoteAsync(int id, Note note)

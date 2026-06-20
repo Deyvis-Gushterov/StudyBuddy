@@ -41,8 +41,6 @@ builder.Services.AddSignalR();
 builder.Services.AddRazorPages();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var app = builder.Build();
-
 var cloudinaryConfig = builder.Configuration.GetSection("Cloudinary");
 var cloudinary = new CloudinaryDotNet.Cloudinary(new CloudinaryDotNet.Account(
     cloudinaryConfig["CloudName"],
@@ -51,6 +49,8 @@ var cloudinary = new CloudinaryDotNet.Cloudinary(new CloudinaryDotNet.Account(
 ));
 cloudinary.Api.Secure = true;
 builder.Services.AddSingleton(cloudinary);
+
+var app = builder.Build();
 
 
 app.UseSwagger();

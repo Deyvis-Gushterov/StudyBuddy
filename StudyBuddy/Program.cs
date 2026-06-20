@@ -39,8 +39,7 @@ builder.Services.AddSignalR();
 
 
 builder.Services.AddRazorPages();
-
-
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var app = builder.Build();
 

@@ -17,6 +17,8 @@ namespace StudyBuddy.Pages.Feed
         private readonly IApplicationUserService _userService;
         private readonly IWebHostEnvironment _env;
         private readonly ICommentService _commentService;
+        private readonly CloudinaryDotNet.Cloudinary _cloudinary;
+
         public string? Tag { get; set; }
         public string? Search { get; set; }
 
@@ -24,13 +26,15 @@ namespace StudyBuddy.Pages.Feed
                           UserManager<ApplicationUser> userManager,
                           IApplicationUserService userService,
                           IWebHostEnvironment env,
-                          ICommentService commentService)
+                          ICommentService commentService,
+                          CloudinaryDotNet.Cloudinary cloudinary)
         {
             _postService = postService;
             _userManager = userManager;
             _userService = userService;
             _env = env;
             _commentService = commentService;
+            _cloudinary = cloudinary;
         }
 
         public List<Post> Posts { get; set; } = new();
@@ -90,19 +94,18 @@ namespace StudyBuddy.Pages.Feed
                 if (!allowed.Contains(ext)) return RedirectToPage();
                 if (image.Length > 5 * 1024 * 1024) return RedirectToPage();
 
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "posts");
-                Directory.CreateDirectory(uploadPath);
-                var filePath = Path.Combine(uploadPath, fileName);
+                // WITH THIS:
+                using var stream = image.OpenReadStream();
+                var uploadParams = new CloudinaryDotNet.Actions.ImageUploadParams
+                {
+                    File = new CloudinaryDotNet.FileDescription(image.FileName, stream),
+                    Folder = "studybuddy/posts"
+                };
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                imageUrl = uploadResult.SecureUrl.ToString();
 
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await image.CopyToAsync(stream);
-
-                imageUrl = $"/uploads/posts/{fileName}";
-            }
-
-            // Extract hashtags from content
-            var tags = new List<PostTag>();
+                // Extract hashtags from content
+                var tags = new List<PostTag>();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 var matches = Regex.Matches(content, @"#(\w+)");

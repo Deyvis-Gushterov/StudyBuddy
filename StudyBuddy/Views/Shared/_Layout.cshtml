@@ -567,8 +567,43 @@
         }
 
         @@media (max-width: 768px) {
+        .sb-navbar {
+        padding: 0 1rem;
+        overflow: hidden;
+        }
+
+        .sb-nav-links {
+        display: none;
+        }
+
+        .sb-nav-auth {
+        gap: 0.4rem;
+        }
+
+        .sb-username {
+        display: none;
+        }
+
+        .sb-user-badge {
+        padding: 0.3rem 0.5rem;
+        }
+
+        .btn-sb-ghost {
+        display: none;
+        }
+
         .sb-hamburger {
         display: flex;
+        }
+
+        .sb-main {
+        padding: 1.5rem 0;
+        }
+
+        .sb-footer-inner {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
         }
         }
     </style>
@@ -587,7 +622,6 @@
         });
     </script>
 
-    <!-- Navbar -->
     <!-- Navbar -->
     <nav class="sb-navbar">
         <a class="sb-logo" href="/">
@@ -672,6 +706,12 @@
             {
                 <a href="/Admin">Admin</a>
             }
+            <form method="post" action="/Identity/Account/Logout?returnUrl=/" style="margin:0">
+                @Html.AntiForgeryToken()
+                <button type="submit" style="background:none;border:none;padding:0.6rem 0;font-size:0.95rem;font-weight:500;color:#DC2626;cursor:pointer;width:100%;text-align:left;">
+                    Sign out
+                </button>
+            </form>
         </div>
     }
 

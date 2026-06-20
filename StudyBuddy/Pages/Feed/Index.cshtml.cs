@@ -94,7 +94,6 @@ namespace StudyBuddy.Pages.Feed
                 if (!allowed.Contains(ext)) return RedirectToPage();
                 if (image.Length > 5 * 1024 * 1024) return RedirectToPage();
 
-                // WITH THIS:
                 using var stream = image.OpenReadStream();
                 var uploadParams = new CloudinaryDotNet.Actions.ImageUploadParams
                 {
@@ -103,9 +102,10 @@ namespace StudyBuddy.Pages.Feed
                 };
                 var uploadResult = await _cloudinary.UploadAsync(uploadParams);
                 imageUrl = uploadResult.SecureUrl.ToString();
+            }
 
-                // Extract hashtags from content
-                var tags = new List<PostTag>();
+            // Extract hashtags from content
+            var tags = new List<PostTag>();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 var matches = Regex.Matches(content, @"#(\w+)");
